@@ -150,9 +150,9 @@ class RegisterViewController: UIViewController {
         configureView()
     }
     
-    fileprivate func configureScrollView() {
-        view.addSubview(<#T##UIView#>)
-    }
+//    fileprivate func configureScrollView() {
+//        view.addSubview(scrollView)
+//    }
     
     fileprivate func configureView() {
         view.addSubview(signUpLabel)
