@@ -150,16 +150,23 @@ class RegisterViewController: UIViewController {
         configureView()
     }
     
-//    fileprivate func configureScrollView() {
-//        view.addSubview(scrollView)
-//    }
+    fileprivate func configureScrollView() {
+        view.addSubview(scrollView)
+        scrollView.addSubview(scrollStack)
+    }
     
     fileprivate func configureView() {
         view.addSubview(signUpLabel)
-        view.addSubview(usernameStack)
-        view.addSubview(emailStack)
-        view.addSubview(passwordStack)
+//        view.addSubview(usernameStack)
+//        view.addSubview(emailStack)
+//        view.addSubview(passwordStack)
+        configureScrollView()
         view.addSubview(registerButton)
+        
+        NSLayoutConstraint.activate([
+            view.safeAreaLayoutGuide.leftAnchor.constraint(equalTo: view.leftAnchor),
+            view.safeAreaLayoutGuide.rightAnchor.constraint(equalTo: view.rightAnchor)
+        ])
 
         NSLayoutConstraint.activate([
             signUpLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
@@ -167,31 +174,56 @@ class RegisterViewController: UIViewController {
         ])
         
         NSLayoutConstraint.activate([
-            usernameStack.topAnchor.constraint(equalTo: signUpLabel.bottomAnchor, constant: 20),
-            usernameStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-            usernameStack.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+            scrollView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 0),
+            scrollView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 0),
+            scrollView.topAnchor.constraint(equalTo: signUpLabel.bottomAnchor, constant: 20),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -80),
+            scrollStack.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
+            scrollStack.leftAnchor.constraint(equalTo: scrollView.leftAnchor, constant: 20),
+            scrollStack.rightAnchor.constraint(equalTo: scrollView.rightAnchor, constant: -20),
+            scrollStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 0),
+            usernameStack.topAnchor.constraint(equalTo: scrollStack.topAnchor, constant: 0),
+            usernameStack.leftAnchor.constraint(equalTo: scrollStack.leftAnchor, constant: 0),
+            usernameStack.rightAnchor.constraint(equalTo: scrollStack.rightAnchor, constant: 0),
             usernameTextField.rightAnchor.constraint(equalTo: usernameStack.rightAnchor, constant: 0),
-            usernameTextField.heightAnchor.constraint(equalToConstant: 44)
-        ])
-        
-        NSLayoutConstraint.activate([
-            emailStack.topAnchor.constraint(equalTo: usernameStack.bottomAnchor, constant: 12),
-            emailStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-            emailStack.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+            usernameTextField.heightAnchor.constraint(equalToConstant: 44),
+            emailTextField.heightAnchor.constraint(equalToConstant: 44),
+            emailStack.leftAnchor.constraint(equalTo: scrollStack.leftAnchor, constant: 0),
+            emailStack.rightAnchor.constraint(equalTo: scrollStack.rightAnchor, constant: 0),
             emailTextField.rightAnchor.constraint(equalTo: emailStack.rightAnchor, constant: 0),
-            emailTextField.heightAnchor.constraint(equalToConstant: 44)
-        ])
-        
-        NSLayoutConstraint.activate([
-            passwordStack.topAnchor.constraint(equalTo: emailStack.bottomAnchor, constant: 12),
-            passwordStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-            passwordStack.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+            emailTextField.heightAnchor.constraint(equalToConstant: 44),
+            passwordStack.leftAnchor.constraint(equalTo: scrollStack.leftAnchor, constant: 0),
+            passwordStack.rightAnchor.constraint(equalTo: scrollStack.rightAnchor, constant: 0),
             passwordTextField.rightAnchor.constraint(equalTo: passwordStack.rightAnchor, constant: 0),
-            passwordTextField.heightAnchor.constraint(equalToConstant: 44)
+            passwordTextField.heightAnchor.constraint(equalToConstant: 44),
         ])
         
+//        NSLayoutConstraint.activate([
+//            usernameStack.topAnchor.constraint(equalTo: signUpLabel.bottomAnchor, constant: 20),
+//            usernameStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+//            usernameStack.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+//            usernameTextField.rightAnchor.constraint(equalTo: usernameStack.rightAnchor, constant: 0),
+//            usernameTextField.heightAnchor.constraint(equalToConstant: 44)
+//        ])
+//        
+//        NSLayoutConstraint.activate([
+//            emailStack.topAnchor.constraint(equalTo: usernameStack.bottomAnchor, constant: 12),
+//            emailStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+//            emailStack.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+//            emailTextField.rightAnchor.constraint(equalTo: emailStack.rightAnchor, constant: 0),
+//            emailTextField.heightAnchor.constraint(equalToConstant: 44)
+//        ])
+//        
+//        NSLayoutConstraint.activate([
+//            passwordStack.topAnchor.constraint(equalTo: emailStack.bottomAnchor, constant: 12),
+//            passwordStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+//            passwordStack.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+//            passwordTextField.rightAnchor.constraint(equalTo: passwordStack.rightAnchor, constant: 0),
+//            passwordTextField.heightAnchor.constraint(equalToConstant: 44)
+//        ])
+        
         NSLayoutConstraint.activate([
-            registerButton.topAnchor.constraint(equalTo: passwordStack.bottomAnchor, constant: 44),
+            registerButton.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 0),
             registerButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
             registerButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
             registerButton.heightAnchor.constraint(equalToConstant: 44)
