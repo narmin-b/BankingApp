@@ -11,6 +11,7 @@ class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .red
+        view.backgroundColor = .systemBackground
+        navigationItem.setHidesBackButton(true, animated: true)
     }
 }
