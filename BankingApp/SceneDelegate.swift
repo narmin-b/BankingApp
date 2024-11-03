@@ -21,7 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let newWindow = UIWindow(windowScene: windowScene)
         
-        let controller = isLogin ? MainViewController() : RegisterViewController()
+        let controller = isLogin ? MainViewController() : LoginViewController()
         let navController = UINavigationController(rootViewController: controller)
 
         newWindow.rootViewController = navController

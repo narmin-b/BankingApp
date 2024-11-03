@@ -8,9 +8,14 @@
 import UIKit
 import RealmSwift
 
+protocol RegisterViewControllerDelegate: AnyObject {
+    func didRegister()
+}
+
 class RegisterViewController: UIViewController {
     
     let realm = try! Realm()
+    weak var delegate: RegisterViewControllerDelegate?
     
     private lazy var signUpLabel: UILabel = {
         let label = UILabel()
@@ -188,11 +193,37 @@ class RegisterViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+    
+    private lazy var loginLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Already have an account?"
+        label.font = UIFont(name: "Futura", size: 12)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var loginButton: UIButton = {
+        let button = UIButton()
+        button.setAttributedTitle(NSAttributedString(string: "Login", attributes: [.font: UIFont(name: "Futura", size: 12), .foregroundColor: UIColor.gray]), for: .normal)
+        button.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private lazy var loginStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [loginLabel, loginButton])
+        stack.axis = .horizontal
+        stack.spacing = 2
+        stack.alignment = .center
+        stack.distribution = .fill
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("Realm is located at:", realm.configuration.fileURL!)
-        
+        navigationItem.setHidesBackButton(true, animated: true)
+
         view.backgroundColor = .systemBackground
         configureView()
     }
@@ -206,6 +237,7 @@ class RegisterViewController: UIViewController {
         view.addSubview(signUpLabel)
         configureScrollView()
         view.addSubview(registerButton)
+        view.addSubview(loginStack)
         
         configureConstraints()
     }
@@ -247,6 +279,11 @@ class RegisterViewController: UIViewController {
             registerButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
             registerButton.heightAnchor.constraint(equalToConstant: 48)
         ])
+        
+        NSLayoutConstraint.activate([
+            loginStack.topAnchor.constraint(equalTo: registerButton.bottomAnchor, constant: 24),
+            loginStack.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ])
     }
     
     @objc fileprivate func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
@@ -258,27 +295,34 @@ class RegisterViewController: UIViewController {
             tappedImage?.image = UIImage(systemName: "eye.slash.fill")
         }
         passwordTextField.isSecureTextEntry.toggle()
-
     }
     
     @objc fileprivate func registerButtonTapped() {
         if isUsernameValid() && isEmailValid() && isPasswordValid() {
             saveUser()
+            delegate?.didRegister()
             usernameTextField.text = ""
             emailTextField.text = ""
             passwordTextField.text = ""
             let vc = LoginViewController()
-            navigationController?.pushViewController(LoginViewController(), animated: true)
+            navigationController?.popViewController(animated: true)
         }
         else {
             print("Error")
         }
     }
     
+    @objc fileprivate func loginButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    
     fileprivate func isUsernameValid() -> Bool {
         let uname = usernameTextField.text
         let regEx = "\\w{4,10}"
         let test = NSPredicate(format:"SELF MATCHES %@", regEx)
+//        if (realm.objects(User.self).first(where: {$0.username == self.usernameTextField.text}) != nil) {
+//            
+//        }
         return test.evaluate(with: uname)
     }
     
