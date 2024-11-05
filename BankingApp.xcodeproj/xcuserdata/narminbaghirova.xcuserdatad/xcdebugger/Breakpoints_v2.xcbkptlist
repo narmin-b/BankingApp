@@ -78,8 +78,8 @@
             filePath = "BankingApp/Auth/LoginViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "276"
-            endingLineNumber = "276"
+            startingLineNumber = "291"
+            endingLineNumber = "291"
             landmarkName = "didRegister()"
             landmarkType = "7">
          </BreakpointContent>

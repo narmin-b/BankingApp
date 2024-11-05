@@ -254,14 +254,29 @@ class LoginViewController: UIViewController {
     
     fileprivate func isUserValid() -> Bool {
         if let user = realm.objects(User.self).filter({$0.username == self.usernameTextField.text}).first {
+            errorBorderOff(field: usernameTextField)
             if user.password == passwordTextField.text {
+                errorBorderOff(field: passwordTextField)
                 return true
             }
             else {
+                errorBorderOn(field: passwordTextField)
                 return false
             }
         }
+        else {
+            errorBorderOn(field: usernameTextField)
+            errorBorderOn(field: passwordTextField)
+        }
         return false
+    }
+    
+    fileprivate func errorBorderOn(field: UITextField) {
+        field.layer.borderColor = UIColor.red.cgColor
+    }
+    
+    fileprivate func errorBorderOff(field: UITextField) {
+        field.layer.borderColor = UIColor.black.cgColor
     }
     
     @objc fileprivate func registerButtonTapped() {
