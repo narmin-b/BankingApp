@@ -39,7 +39,7 @@ class RegisterViewController: UIViewController {
     
     private lazy var usernameTextField: UITextField = {
         let textfield = UITextField()
-        textfield.attributedPlaceholder = NSAttributedString(string: "Username", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)])
+        textfield.attributedPlaceholder = NSAttributedString(string: "Username", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)!])
         textfield.borderStyle = .roundedRect
         textfield.layer.borderColor = UIColor.black.cgColor
         textfield.layer.borderWidth = 2
@@ -49,7 +49,7 @@ class RegisterViewController: UIViewController {
         leftIcon.tintColor = .black
         leftIcon.contentMode = .center
         let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: leftIcon.frame.height))
-        leftIcon.frame = CGRect(x: 10, y: 0, width: leftIcon.frame.width, height: leftIcon.frame.height)
+        leftIcon.frame = CGRect(x: 12, y: 0, width: leftIcon.frame.width, height: leftIcon.frame.height)
         leftPaddingView.addSubview(leftIcon)
         
         textfield.leftView = leftPaddingView
@@ -82,7 +82,7 @@ class RegisterViewController: UIViewController {
     
     private lazy var emailTextField: UITextField = {
         let textfield = UITextField()
-        textfield.attributedPlaceholder = NSAttributedString(string: "Email", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)])
+        textfield.attributedPlaceholder = NSAttributedString(string: "Email", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)!])
         textfield.borderStyle = .roundedRect
         textfield.layer.borderColor = UIColor.black.cgColor
         textfield.layer.borderWidth = 2
@@ -124,7 +124,7 @@ class RegisterViewController: UIViewController {
     
     private lazy var passwordTextField: UITextField = {
         let textfield = UITextField()
-        textfield.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)])
+        textfield.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)!])
         textfield.borderStyle = .roundedRect
         textfield.layer.borderColor = UIColor.black.cgColor
         textfield.layer.borderWidth = 2
@@ -134,7 +134,7 @@ class RegisterViewController: UIViewController {
         leftIcon.tintColor = .black
         leftIcon.contentMode = .center
         let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: leftIcon.frame.height))
-        leftIcon.frame = CGRect(x: 10, y: 0, width: leftIcon.frame.width, height: leftIcon.frame.height)
+        leftIcon.frame = CGRect(x: 13, y: 0, width: leftIcon.frame.width, height: leftIcon.frame.height)
         leftPaddingView.addSubview(leftIcon)
         
         textfield.leftView = leftPaddingView
@@ -185,7 +185,7 @@ class RegisterViewController: UIViewController {
     
     private lazy var registerButton: UIButton = {
         let button = UIButton()
-        button.setAttributedTitle(NSAttributedString(string: "Register", attributes: [.font: UIFont(name: "Futura", size: 18)]), for: .normal)
+        button.setAttributedTitle(NSAttributedString(string: "Register", attributes: [.font: UIFont(name: "Futura", size: 18)!]), for: .normal)
         button.layer.cornerRadius = 12
         button.titleLabel?.textAlignment = .center
         button.backgroundColor = .lightGray
@@ -204,7 +204,7 @@ class RegisterViewController: UIViewController {
     
     private lazy var loginButton: UIButton = {
         let button = UIButton()
-        button.setAttributedTitle(NSAttributedString(string: "Login", attributes: [.font: UIFont(name: "Futura", size: 12), .foregroundColor: UIColor.gray]), for: .normal)
+        button.setAttributedTitle(NSAttributedString(string: "Login", attributes: [.font: UIFont(name: "Futura", size: 12)!, .foregroundColor: UIColor.gray]), for: .normal)
         button.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -224,7 +224,6 @@ class RegisterViewController: UIViewController {
         super.viewDidLoad()
         navigationItem.setHidesBackButton(true, animated: true)
 
-        view.backgroundColor = .systemBackground
         configureView()
     }
     
@@ -234,6 +233,8 @@ class RegisterViewController: UIViewController {
     }
     
     fileprivate func configureView() {
+        view.backgroundColor = .systemBackground
+
         view.addSubview(signUpLabel)
         configureScrollView()
         view.addSubview(registerButton)
@@ -298,13 +299,10 @@ class RegisterViewController: UIViewController {
     }
     
     @objc fileprivate func registerButtonTapped() {
-        if isUsernameValid() && isEmailValid() && isPasswordValid() {
+        if isUserInputValid() {
             saveUser()
             delegate?.didRegister()
-            usernameTextField.text = ""
-            emailTextField.text = ""
-            passwordTextField.text = ""
-            let vc = LoginViewController()
+            fieldReset()
             navigationController?.popViewController(animated: true)
         }
         else {
@@ -312,32 +310,38 @@ class RegisterViewController: UIViewController {
         }
     }
     
+    fileprivate func fieldReset() {
+        usernameTextField.text = ""
+        emailTextField.text = ""
+        passwordTextField.text = ""
+    }
+    
+    fileprivate func isUserInputValid() -> Bool {
+        let uname = usernameTextField.text ?? ""
+        let password = passwordTextField.text ?? ""
+        let email = emailTextField.text ?? ""
+        
+        if !uname.isUsernameValid() {
+            usernameTextField.errorBorderOn()
+        } else {
+            usernameTextField.errorBorderOff()
+        }
+        if !password.isPasswordValid() {
+            passwordTextField.errorBorderOn()
+        } else {
+            passwordTextField.errorBorderOff()
+        }
+        if !email.isValidEmail() {
+            emailTextField.errorBorderOn()
+        } else {
+            emailTextField.errorBorderOff()
+        }
+        
+        return (uname.isUsernameValid() && password.isPasswordValid() && email.isValidEmail())
+    }
+    
     @objc fileprivate func loginButtonTapped() {
         navigationController?.popViewController(animated: true)
-    }
-    
-    fileprivate func isUsernameValid() -> Bool {
-        let uname = usernameTextField.text
-        let regEx = "\\w{4,10}"
-        let test = NSPredicate(format:"SELF MATCHES %@", regEx)
-//        if (realm.objects(User.self).first(where: {$0.username == self.usernameTextField.text}) != nil) {
-//            
-//        }
-        return test.evaluate(with: uname)
-    }
-    
-    fileprivate func isEmailValid() -> Bool {
-        let email = emailTextField.text
-        let regEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let test = NSPredicate(format:"SELF MATCHES %@", regEx)
-        return test.evaluate(with: email)
-    }
-    
-    fileprivate func isPasswordValid() -> Bool {
-        let password = passwordTextField.text
-        let regEx = "^(?=.*[A-Za-z0-9]{4,}).+$"
-        let test = NSPredicate(format:"SELF MATCHES %@", regEx)
-        return test.evaluate(with: password)
     }
     
     fileprivate func saveUser() {

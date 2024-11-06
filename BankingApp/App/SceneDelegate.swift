@@ -11,21 +11,58 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-    private var isLogin: Bool = false
-
+    private var loginType = UserDefaultsHelper.getInteger(key: UserDefaultsKey.loginType.rawValue)
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        
-        guard let _ = (scene as? UIWindowScene) else { return }
-        
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        
-        let newWindow = UIWindow(windowScene: windowScene)
-        
-        let controller = isLogin ? MainViewController() : LoginViewController()
-        let navController = UINavigationController(rootViewController: controller)
-
-        newWindow.rootViewController = navController
+        start(scene: windowScene)
+        guard let _ = (scene as? UIWindowScene) else { return }
+    }
+    
+    fileprivate func start(scene: UIWindowScene) {
+        var newWindow: UIWindow?
+        switch loginType {
+        case 0:
+            newWindow = showLoginController(scene: scene)
+        default:
+            newWindow = showMainController(scene: scene)
+        }
         window = newWindow
+        window?.makeKeyAndVisible()
+    }
+    
+    private func showLoginController(scene: UIWindowScene) -> UIWindow {
+        let controller = LoginViewController()
+        
+        let navigationController = UINavigationController(rootViewController: controller)
+        
+        let newWindow = UIWindow(windowScene: scene)
+        newWindow.rootViewController = navigationController
+        
+        return newWindow
+    }
+    
+    private func showMainController(scene: UIWindowScene) -> UIWindow {
+        let controller = MainViewController()
+        
+        let navigationController = UINavigationController(rootViewController: controller)
+        
+        let newWindow = UIWindow(windowScene: scene)
+        newWindow.rootViewController = navigationController
+        
+        return newWindow
+    }
+    
+    func switchToLogin() {
+        guard let windowScene = window?.windowScene else { return }
+
+        window = showLoginController(scene: windowScene)
+        window?.makeKeyAndVisible()
+    }
+    
+    func switchToMain() {
+        guard let windowScene = window?.windowScene else { return }
+        window = showMainController(scene: windowScene)
         window?.makeKeyAndVisible()
     }
 

@@ -15,7 +15,7 @@ class LoginViewController: UIViewController {
     private lazy var loginLabel: UILabel = {
         let label = UILabel()
         label.text = "Log Back In"
-        label.textColor = .black
+        label.textColor = .basicText
         label.textAlignment = .left
         label.font = UIFont(name: "Futura", size: 32)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -25,7 +25,7 @@ class LoginViewController: UIViewController {
     private lazy var usernameLabel: UILabel = {
         let label = UILabel()
         label.text = "Username"
-        label.textColor = .black
+        label.textColor = .basicText
         label.textAlignment = .left
         label.font = UIFont(name: "Futura", size: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -34,7 +34,7 @@ class LoginViewController: UIViewController {
     
     private lazy var usernameTextField: UITextField = {
         let textfield = UITextField()
-        textfield.attributedPlaceholder = NSAttributedString(string: "Username", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)])
+        textfield.attributedPlaceholder = NSAttributedString(string: "Username", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)!])
         textfield.borderStyle = .roundedRect
         textfield.layer.borderColor = UIColor.black.cgColor
         textfield.layer.borderWidth = 2
@@ -68,7 +68,7 @@ class LoginViewController: UIViewController {
     private lazy var passwordLabel: UILabel = {
         let label = UILabel()
         label.text = "Password"
-        label.textColor = .black
+        label.textColor = .basicText
         label.textAlignment = .left
         label.font = UIFont(name: "Futura", size: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -77,7 +77,7 @@ class LoginViewController: UIViewController {
     
     private lazy var passwordTextField: UITextField = {
         let textfield = UITextField()
-        textfield.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)])
+        textfield.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)!])
         textfield.borderStyle = .roundedRect
         textfield.layer.borderColor = UIColor.black.cgColor
         textfield.layer.borderWidth = 2
@@ -138,7 +138,7 @@ class LoginViewController: UIViewController {
     
     private lazy var loginButton: UIButton = {
         let button = UIButton()
-        button.setAttributedTitle(NSAttributedString(string: "Log In", attributes: [.font: UIFont(name: "Futura", size: 18)]), for: .normal)
+        button.setAttributedTitle(NSAttributedString(string: "Log In", attributes: [.font: UIFont(name: "Futura", size: 18)!]), for: .normal)
         button.layer.cornerRadius = 12
         button.titleLabel?.textAlignment = .center
         button.backgroundColor = .lightGray
@@ -157,7 +157,7 @@ class LoginViewController: UIViewController {
     
     private lazy var registerButton: UIButton = {
         let button = UIButton()
-        button.setAttributedTitle(NSAttributedString(string: "Register", attributes: [.font: UIFont(name: "Futura", size: 12), .foregroundColor: UIColor.gray]), for: .normal)
+        button.setAttributedTitle(NSAttributedString(string: "Register", attributes: [.font: UIFont(name: "Futura", size: 12)!, .foregroundColor: UIColor.gray]), for: .normal)
         button.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -175,6 +175,7 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        UserDefaultsHelper.setInteger(key: UserDefaultsKey.loginType.rawValue, value: 0)
         print("Realm is located at:", realm.configuration.fileURL!)
 
         view.backgroundColor = .systemBackground
@@ -248,36 +249,39 @@ class LoginViewController: UIViewController {
     
     @objc fileprivate func loginButtonTapped() {
         if isUserValid() {
-            print(#function)
+            showMain()
+        }
+        else {print("error")}
+    }
+    
+    fileprivate func showMain() {
+        if let scene = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+            scene.switchToMain()
         }
     }
     
     fileprivate func isUserValid() -> Bool {
-        if let user = realm.objects(User.self).filter({$0.username == self.usernameTextField.text}).first {
-            errorBorderOff(field: usernameTextField)
-            if user.password == passwordTextField.text {
-                errorBorderOff(field: passwordTextField)
+        let uname = usernameTextField.text
+        let password = passwordTextField.text
+        if let user = realm.objects(User.self).filter({$0.username == uname}).first {
+            usernameTextField.errorBorderOff()
+            if user.password == password {
+                passwordTextField.errorBorderOff()
                 return true
             }
             else {
-                errorBorderOn(field: passwordTextField)
+                passwordTextField.errorBorderOn()
                 return false
             }
         }
         else {
-            errorBorderOn(field: usernameTextField)
-            errorBorderOn(field: passwordTextField)
+            usernameTextField.errorBorderOn()
+            passwordTextField.errorBorderOn()
         }
         return false
     }
     
-    fileprivate func errorBorderOn(field: UITextField) {
-        field.layer.borderColor = UIColor.red.cgColor
-    }
     
-    fileprivate func errorBorderOff(field: UITextField) {
-        field.layer.borderColor = UIColor.black.cgColor
-    }
     
     @objc fileprivate func registerButtonTapped() {
         let controller = RegisterViewController()
