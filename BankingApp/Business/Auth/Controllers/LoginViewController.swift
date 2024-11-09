@@ -40,16 +40,8 @@ class LoginViewController: UIViewController {
         textfield.layer.borderWidth = 2
         textfield.layer.cornerRadius = 12
         
-        let leftIcon = UIImageView(image: UIImage(systemName: "person"))
-        leftIcon.tintColor = .black
-        leftIcon.contentMode = .center
-        let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: leftIcon.frame.height))
-        leftIcon.frame = CGRect(x: 10, y: 0, width: leftIcon.frame.width, height: leftIcon.frame.height)
-        leftPaddingView.addSubview(leftIcon)
-        
-        textfield.leftView = leftPaddingView
+        textfield.leftView = iconSetting("person")
         textfield.leftViewMode = .always
-        
         
         textfield.translatesAutoresizingMaskIntoConstraints = false
         return textfield
@@ -82,15 +74,8 @@ class LoginViewController: UIViewController {
         textfield.layer.borderColor = UIColor.black.cgColor
         textfield.layer.borderWidth = 2
         textfield.layer.cornerRadius = 12
-        
-        let leftIcon = UIImageView(image: UIImage(systemName: "lock"))
-        leftIcon.tintColor = .black
-        leftIcon.contentMode = .center
-        let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: leftIcon.frame.height))
-        leftIcon.frame = CGRect(x: 10, y: 0, width: leftIcon.frame.width, height: leftIcon.frame.height)
-        leftPaddingView.addSubview(leftIcon)
-        
-        textfield.leftView = leftPaddingView
+
+        textfield.leftView = iconSetting("lock")
         textfield.leftViewMode = .always
         
         let rightIcon = UIImageView(image: UIImage(systemName: "eye.fill"))
@@ -260,6 +245,7 @@ class LoginViewController: UIViewController {
         }
     }
     
+    
     fileprivate func isUserValid() -> Bool {
         let uname = usernameTextField.text
         let password = passwordTextField.text
@@ -281,7 +267,14 @@ class LoginViewController: UIViewController {
         return false
     }
     
-    
+    fileprivate func iconSetting(_ iconName: String, x: Int = 10) -> UIView {
+        let icon = UIImageView(image: UIImage(systemName: iconName))
+        icon.tintColor = .black
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: icon.frame.height))
+        icon.frame = CGRect(x: CGFloat(integerLiteral: x), y: 0, width: icon.frame.width, height: icon.frame.height)
+        paddingView.addSubview(icon)
+        return paddingView
+    }
     
     @objc fileprivate func registerButtonTapped() {
         let controller = RegisterViewController()

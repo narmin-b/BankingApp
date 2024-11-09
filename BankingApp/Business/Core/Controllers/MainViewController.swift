@@ -13,7 +13,6 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .blue
         UserDefaultsHelper.setInteger(key: UserDefaultsKey.loginType.rawValue, value: 1)
-
     }
     
 }
