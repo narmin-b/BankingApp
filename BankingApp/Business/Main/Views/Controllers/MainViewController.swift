@@ -7,11 +7,11 @@
 
 import UIKit
 
-class MainViewController: UIViewController {
+class MainViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .blue
+        view.backgroundColor = .red
 //        UserDefaultsHelper.setInteger(key: UserDefaultsKey.loginType.rawValue, value: 1)
     }
     

@@ -43,7 +43,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     private func showMainController(scene: UIWindowScene) -> UIWindow {
-        let controller = MainViewController()
+        let controller = MainTabBarController()
         
         let navigationController = UINavigationController(rootViewController: controller)
         
