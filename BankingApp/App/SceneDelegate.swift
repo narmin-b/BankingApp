@@ -32,7 +32,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     private func showLoginController(scene: UIWindowScene) -> UIWindow {
-        let controller = LoginViewController()
+        let controller = LoginViewController(viewModel: LoginViewModel())
         
         let navigationController = UINavigationController(rootViewController: controller)
         

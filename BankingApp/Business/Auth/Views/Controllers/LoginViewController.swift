@@ -9,7 +9,6 @@ import UIKit
 import RealmSwift
 
 class LoginViewController: BaseViewController {
-
     let realm = try! Realm()
     
     private lazy var loginLabel: UILabel = {
@@ -40,7 +39,7 @@ class LoginViewController: BaseViewController {
         textfield.layer.borderWidth = 2
         textfield.layer.cornerRadius = 12
         
-        textfield.leftView = iconSetting("person")
+        textfield.leftView = iconUISetting("person")
         textfield.leftViewMode = .always
         
         textfield.translatesAutoresizingMaskIntoConstraints = false
@@ -75,7 +74,7 @@ class LoginViewController: BaseViewController {
         textfield.layer.borderWidth = 2
         textfield.layer.cornerRadius = 12
 
-        textfield.leftView = iconSetting("lock")
+        textfield.leftView = iconUISetting("lock")
         textfield.leftViewMode = .always
         
         let rightIcon = UIImageView(image: UIImage(systemName: "eye.fill"))
@@ -87,7 +86,7 @@ class LoginViewController: BaseViewController {
         textfield.rightView = rightPaddingView
         textfield.rightViewMode = .always
         
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(togglePasswordVisibility))
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
         rightIcon.isUserInteractionEnabled = true
         rightIcon.addGestureRecognizer(tapGestureRecognizer)
         
@@ -158,11 +157,24 @@ class LoginViewController: BaseViewController {
         return stack
     }()
     
+    private let viewModel: LoginViewModel
+    private var isLogged: Bool = false
+    
+    init(viewModel: LoginViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        UserDefaultsHelper.setInteger(key: UserDefaultsKey.loginType.rawValue, value: 0)
         print("Realm is located at:", realm.configuration.fileURL!)
+        UserDefaultsHelper.setInteger(key: UserDefaultsKey.loginType.rawValue, value: 0)
 
+        configureViewModel()
         configureView()
     }
     
@@ -222,7 +234,15 @@ class LoginViewController: BaseViewController {
         ])
     }
     
-    fileprivate func iconSetting(_ iconName: String, x: Int = 10) -> UIView {
+    override func configureTargets() {
+        super.configureTargets()
+    }
+    
+    fileprivate func configureViewModel() {
+        viewModel.delegate = self
+    }
+    
+    fileprivate func iconUISetting(_ iconName: String, x: Int = 10) -> UIView {
         let icon = UIImageView(image: UIImage(systemName: iconName))
         icon.tintColor = .black
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: icon.frame.height))
@@ -231,15 +251,7 @@ class LoginViewController: BaseViewController {
         return paddingView
     }
     
-    override func configureTargets() {
-        super.configureTargets()
-    }
-    
-    @objc private func togglePasswordVisibility() {
-        passwordTextField.isSecureTextEntry.toggle()
-    }
-    
-    @objc fileprivate func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
+    @objc fileprivate func imageTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
         let tappedImage = tapGestureRecognizer.view as? UIImageView
         
         if passwordTextField.isSecureTextEntry {
@@ -250,29 +262,11 @@ class LoginViewController: BaseViewController {
         passwordTextField.isSecureTextEntry.toggle()
     }
     
-    fileprivate func isUserValid() -> Bool {
-        let uname = usernameTextField.text
-        let password = passwordTextField.text
-        if let user = realm.objects(User.self).filter({$0.username == uname}).first {
-            usernameTextField.errorBorderOff()
-            if user.password == password {
-                passwordTextField.errorBorderOff()
-                return true
-            }
-            else {
-                passwordTextField.errorBorderOn()
-                return false
-            }
-        }
-        else {
-            usernameTextField.errorBorderOn()
-            passwordTextField.errorBorderOn()
-        }
-        return false
-    }
-    
     @objc fileprivate func loginButtonTapped() {
-        if isUserValid() {
+        viewModel.setInput(username: usernameTextField.text!, password: passwordTextField.text!)
+        if viewModel.isUserValid() {
+            usernameTextField.errorBorderOff()
+            passwordTextField.errorBorderOff()
             showMain()
         }
         else {print("error")}
@@ -285,12 +279,10 @@ class LoginViewController: BaseViewController {
     }
     
     @objc fileprivate func registerButtonTapped() {
-        let controller = RegisterViewController()
+        let controller = RegisterViewController(viewModel: RegisterViewModel())
         controller.delegate = self
         navigationController?.pushViewController(controller, animated: true)
     }
-    
-    
 }
 
 extension LoginViewController: RegisterViewControllerDelegate {
@@ -299,4 +291,17 @@ extension LoginViewController: RegisterViewControllerDelegate {
         usernameTextField.text = user?.username
         passwordTextField.text = user?.password
     }
+}
+
+extension LoginViewController: LoginViewModelDelegate {
+    
+    func userError() {
+        usernameTextField.errorBorderOn()
+        passwordTextField.errorBorderOn()
+    }
+    
+    func passwordError() {
+        passwordTextField.errorBorderOn()
+    }
+    
 }

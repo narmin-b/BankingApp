@@ -12,7 +12,7 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .blue
-        UserDefaultsHelper.setInteger(key: UserDefaultsKey.loginType.rawValue, value: 1)
+//        UserDefaultsHelper.setInteger(key: UserDefaultsKey.loginType.rawValue, value: 1)
     }
     
 }

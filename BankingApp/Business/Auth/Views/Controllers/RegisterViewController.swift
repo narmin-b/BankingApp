@@ -45,7 +45,7 @@ class RegisterViewController: BaseViewController {
         textfield.layer.borderWidth = 2
         textfield.layer.cornerRadius = 12
         
-        textfield.leftView = iconSetting("person", x: 12)
+        textfield.leftView = iconUISetting("person", x: 12)
         textfield.leftViewMode = .always
         
         
@@ -81,7 +81,7 @@ class RegisterViewController: BaseViewController {
         textfield.layer.borderWidth = 2
         textfield.layer.cornerRadius = 12
         
-        textfield.leftView = iconSetting("envelope")
+        textfield.leftView = iconUISetting("envelope")
         textfield.leftViewMode = .always
         
         textfield.translatesAutoresizingMaskIntoConstraints = false
@@ -116,7 +116,7 @@ class RegisterViewController: BaseViewController {
         textfield.layer.borderWidth = 2
         textfield.layer.cornerRadius = 12
         
-        textfield.leftView = iconSetting("lock", x: 13)
+        textfield.leftView = iconUISetting("lock", x: 13)
         textfield.leftViewMode = .always
         
         let rightIcon = UIImageView(image: UIImage(systemName: "eye.fill"))
@@ -128,7 +128,7 @@ class RegisterViewController: BaseViewController {
         textfield.rightView = rightPaddingView
         textfield.rightViewMode = .always
         
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(togglePasswordVisibility))
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
         rightIcon.isUserInteractionEnabled = true
         rightIcon.addGestureRecognizer(tapGestureRecognizer)
         
@@ -198,12 +198,28 @@ class RegisterViewController: BaseViewController {
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
+    
+    private let viewModel: RegisterViewModel
+    
+    init(viewModel: RegisterViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.setHidesBackButton(true, animated: true)
 
         configureView()
+        configureViewModel()
+    }
+    
+    fileprivate func configureViewModel() {
+        viewModel.delegate = self
     }
     
     fileprivate func configureScrollView() {
@@ -267,15 +283,20 @@ class RegisterViewController: BaseViewController {
         ])
     }
     
+    fileprivate func iconUISetting(_ iconName: String, x: Int = 10) -> UIView {
+        let icon = UIImageView(image: UIImage(systemName: iconName))
+        icon.tintColor = .black
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: icon.frame.height))
+        icon.frame = CGRect(x: CGFloat(integerLiteral: x), y: 0, width: icon.frame.width, height: icon.frame.height)
+        paddingView.addSubview(icon)
+        return paddingView
+    }
+    
     override func configureTargets() {
         super.configureTargets()
     }
     
-    @objc private func togglePasswordVisibility() {
-        passwordTextField.isSecureTextEntry.toggle()
-    }
-    
-    @objc fileprivate func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
+    @objc fileprivate func imageTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
         let tappedImage = tapGestureRecognizer.view as? UIImageView
         
         if passwordTextField.isSecureTextEntry {
@@ -286,9 +307,20 @@ class RegisterViewController: BaseViewController {
         passwordTextField.isSecureTextEntry.toggle()
     }
     
+    fileprivate func fieldReset() {
+        usernameTextField.text = ""
+        emailTextField.text = ""
+        passwordTextField.text = ""
+    }
+    
+    @objc fileprivate func loginButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    
     @objc fileprivate func registerButtonTapped() {
-        if isUserInputValid() {
-            saveUser()
+        viewModel.setInput(username: usernameTextField.text!, password: passwordTextField.text!, email: emailTextField.text!)
+        if viewModel.isUserInputValid() {
+            viewModel.saveUser()
             delegate?.didRegister()
             fieldReset()
             navigationController?.popViewController(animated: true)
@@ -297,58 +329,30 @@ class RegisterViewController: BaseViewController {
             print("Error")
         }
     }
-    
-    fileprivate func fieldReset() {
-        usernameTextField.text = ""
-        emailTextField.text = ""
-        passwordTextField.text = ""
+}
+
+extension RegisterViewController: RegisterViewModelDelegate {
+    func usernameError() {
+        usernameTextField.errorBorderOn()
     }
     
-    fileprivate func isUserInputValid() -> Bool {
-        let uname = usernameTextField.text ?? ""
-        let password = passwordTextField.text ?? ""
-        let email = emailTextField.text ?? ""
-        
-        if !uname.isUsernameValid() {
-            usernameTextField.errorBorderOn()
-        } else {
-            usernameTextField.errorBorderOff()
-        }
-        if !password.isPasswordValid() {
-            passwordTextField.errorBorderOn()
-        } else {
-            passwordTextField.errorBorderOff()
-        }
-        if !email.isValidEmail() {
-            emailTextField.errorBorderOn()
-        } else {
-            emailTextField.errorBorderOff()
-        }
-        
-        return (uname.isUsernameValid() && password.isPasswordValid() && email.isValidEmail())
+    func passwordError() {
+        passwordTextField.errorBorderOn()
     }
     
-    @objc fileprivate func loginButtonTapped() {
-        navigationController?.popViewController(animated: true)
+    func emailError() {
+        emailTextField.errorBorderOn()
     }
     
-    fileprivate func iconSetting(_ iconName: String, x: Int = 10) -> UIView {
-        let icon = UIImageView(image: UIImage(systemName: iconName))
-        icon.tintColor = .black
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: icon.frame.height))
-        icon.frame = CGRect(x: CGFloat(integerLiteral: x), y: 0, width: icon.frame.width, height: icon.frame.height)
-        paddingView.addSubview(icon)
-        return paddingView
+    func usernameValid() {
+        usernameTextField.errorBorderOff()
     }
     
-    fileprivate func saveUser() {
-        let user = User()
-        user.username = usernameTextField.text
-        user.email = emailTextField.text
-        user.password = passwordTextField.text
-        
-        try? realm.write {
-            realm.add(user)
-        }
+    func passwordValid() {
+        passwordTextField.errorBorderOff()
+    }
+    
+    func emailValid() {
+        emailTextField.errorBorderOff()
     }
 }
