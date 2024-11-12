@@ -14,5 +14,4 @@ class MainViewController: BaseViewController {
         view.backgroundColor = .red
 //        UserDefaultsHelper.setInteger(key: UserDefaultsKey.loginType.rawValue, value: 1)
     }
-    
 }
