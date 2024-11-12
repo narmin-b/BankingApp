@@ -12,7 +12,7 @@ protocol RegisterViewControllerDelegate: AnyObject {
     func didRegister()
 }
 
-class RegisterViewController: UIViewController {
+class RegisterViewController: BaseViewController {
     
     let realm = try! Realm()
     weak var delegate: RegisterViewControllerDelegate?
@@ -128,7 +128,7 @@ class RegisterViewController: UIViewController {
         textfield.rightView = rightPaddingView
         textfield.rightViewMode = .always
         
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(togglePasswordVisibility))
         rightIcon.isUserInteractionEnabled = true
         rightIcon.addGestureRecognizer(tapGestureRecognizer)
         
@@ -211,18 +211,19 @@ class RegisterViewController: UIViewController {
         scrollView.addSubview(scrollStack)
     }
     
-    fileprivate func configureView() {
-        view.backgroundColor = .systemBackground
+    override func configureView() {
+        super.configureView()
 
         view.addSubview(signUpLabel)
         configureScrollView()
         view.addSubview(registerButton)
         view.addSubview(loginStack)
         
-        configureConstraints()
+        configureConstraint()
     }
     
-    fileprivate func configureConstraints() {
+    override func configureConstraint() {
+        super.configureConstraint()
         NSLayoutConstraint.activate([
             signUpLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
             signUpLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20)
@@ -264,6 +265,14 @@ class RegisterViewController: UIViewController {
             loginStack.topAnchor.constraint(equalTo: registerButton.bottomAnchor, constant: 24),
             loginStack.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
+    }
+    
+    override func configureTargets() {
+        super.configureTargets()
+    }
+    
+    @objc private func togglePasswordVisibility() {
+        passwordTextField.isSecureTextEntry.toggle()
     }
     
     @objc fileprivate func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {

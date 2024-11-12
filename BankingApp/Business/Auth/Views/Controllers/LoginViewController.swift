@@ -8,7 +8,7 @@
 import UIKit
 import RealmSwift
 
-class LoginViewController: UIViewController {
+class LoginViewController: BaseViewController {
 
     let realm = try! Realm()
     
@@ -87,7 +87,7 @@ class LoginViewController: UIViewController {
         textfield.rightView = rightPaddingView
         textfield.rightViewMode = .always
         
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(togglePasswordVisibility))
         rightIcon.isUserInteractionEnabled = true
         rightIcon.addGestureRecognizer(tapGestureRecognizer)
         
@@ -163,7 +163,6 @@ class LoginViewController: UIViewController {
         UserDefaultsHelper.setInteger(key: UserDefaultsKey.loginType.rawValue, value: 0)
         print("Realm is located at:", realm.configuration.fileURL!)
 
-        view.backgroundColor = .systemBackground
         configureView()
     }
     
@@ -172,16 +171,18 @@ class LoginViewController: UIViewController {
         scrollView.addSubview(scrollStack)
     }
     
-    fileprivate func configureView() {
+    override func configureView() {
+        super.configureView()
         view.addSubview(loginLabel)
         configureScrollView()
         view.addSubview(loginButton)
         view.addSubview(registerStack)
         
-        configureConstraints()
+        configureConstraint()
     }
     
-    fileprivate func configureConstraints() {
+    override func configureConstraint() {
+        super.configureConstraint()
         NSLayoutConstraint.activate([
             loginLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
             loginLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20)
@@ -221,6 +222,23 @@ class LoginViewController: UIViewController {
         ])
     }
     
+    fileprivate func iconSetting(_ iconName: String, x: Int = 10) -> UIView {
+        let icon = UIImageView(image: UIImage(systemName: iconName))
+        icon.tintColor = .black
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: icon.frame.height))
+        icon.frame = CGRect(x: CGFloat(integerLiteral: x), y: 0, width: icon.frame.width, height: icon.frame.height)
+        paddingView.addSubview(icon)
+        return paddingView
+    }
+    
+    override func configureTargets() {
+        super.configureTargets()
+    }
+    
+    @objc private func togglePasswordVisibility() {
+        passwordTextField.isSecureTextEntry.toggle()
+    }
+    
     @objc fileprivate func imageTapped(tapGestureRecognizer: UITapGestureRecognizer) {
         let tappedImage = tapGestureRecognizer.view as? UIImageView
         
@@ -231,20 +249,6 @@ class LoginViewController: UIViewController {
         }
         passwordTextField.isSecureTextEntry.toggle()
     }
-    
-    @objc fileprivate func loginButtonTapped() {
-        if isUserValid() {
-            showMain()
-        }
-        else {print("error")}
-    }
-    
-    fileprivate func showMain() {
-        if let scene = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
-            scene.switchToMain()
-        }
-    }
-    
     
     fileprivate func isUserValid() -> Bool {
         let uname = usernameTextField.text
@@ -267,13 +271,17 @@ class LoginViewController: UIViewController {
         return false
     }
     
-    fileprivate func iconSetting(_ iconName: String, x: Int = 10) -> UIView {
-        let icon = UIImageView(image: UIImage(systemName: iconName))
-        icon.tintColor = .black
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: icon.frame.height))
-        icon.frame = CGRect(x: CGFloat(integerLiteral: x), y: 0, width: icon.frame.width, height: icon.frame.height)
-        paddingView.addSubview(icon)
-        return paddingView
+    @objc fileprivate func loginButtonTapped() {
+        if isUserValid() {
+            showMain()
+        }
+        else {print("error")}
+    }
+    
+    fileprivate func showMain() {
+        if let scene = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+            scene.switchToMain()
+        }
     }
     
     @objc fileprivate func registerButtonTapped() {
@@ -281,6 +289,8 @@ class LoginViewController: UIViewController {
         controller.delegate = self
         navigationController?.pushViewController(controller, animated: true)
     }
+    
+    
 }
 
 extension LoginViewController: RegisterViewControllerDelegate {
