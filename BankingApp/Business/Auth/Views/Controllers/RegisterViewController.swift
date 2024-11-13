@@ -234,12 +234,7 @@ class RegisterViewController: BaseViewController {
     }()
     
     private lazy var registerButton: UIButton = {
-        let button = UIButton()
-        button.setAttributedTitle(NSAttributedString(string: "Register", attributes: [.font: UIFont(name: "Futura", size: 18)!]), for: .normal)
-        button.layer.cornerRadius = 12
-        button.titleLabel?.textAlignment = .center
-        button.backgroundColor = .lightGray
-        button.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
+        let button = ReusableButton(title: "Register", onAction: registerButtonTapped)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()

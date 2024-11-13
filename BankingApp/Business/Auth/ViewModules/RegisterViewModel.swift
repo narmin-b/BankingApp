@@ -67,7 +67,7 @@ final class RegisterViewModel {
         } else {
             delegate?.emailValid()
         }
-        return ((firstName.isFullNameValid() || lastName.isFullNameValid()) && username.isUsernameValid() && password.isPasswordValid() && email.isValidEmail())
+        return (firstName.isFullNameValid() && lastName.isFullNameValid() && username.isUsernameValid() && password.isPasswordValid() && email.isValidEmail())
     }
     
     func saveUser() {
