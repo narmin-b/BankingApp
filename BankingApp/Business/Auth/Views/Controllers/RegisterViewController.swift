@@ -27,6 +27,41 @@ class RegisterViewController: BaseViewController {
         return label
     }()
     
+    private lazy var fullNameLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Full Name"
+        label.textColor = .basicText
+        label.textAlignment = .left
+        label.font = UIFont(name: "Futura", size: 12)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var fullNameTextField: UITextField = {
+        let textfield = UITextField()
+        textfield.attributedPlaceholder = NSAttributedString(string: "Full Name", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)!])
+        textfield.borderStyle = .roundedRect
+        textfield.layer.borderColor = UIColor.black.cgColor
+        textfield.layer.borderWidth = 2
+        textfield.layer.cornerRadius = 12
+        
+        textfield.leftView = iconUISetting("person")
+        textfield.leftViewMode = .always
+        
+        textfield.translatesAutoresizingMaskIntoConstraints = false
+        return textfield
+    }()
+    
+    private lazy var fullNameStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [fullNameLabel, fullNameTextField])
+        stack.axis = .vertical
+        stack.spacing = 4
+        stack.alignment = .fill
+        stack.distribution = .fill
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
+    
     private lazy var usernameLabel: UILabel = {
         let label = UILabel()
         label.text = "Username"
@@ -45,7 +80,7 @@ class RegisterViewController: BaseViewController {
         textfield.layer.borderWidth = 2
         textfield.layer.cornerRadius = 12
         
-        textfield.leftView = iconUISetting("person", x: 12)
+        textfield.leftView = iconUISetting("person.text.rectangle")
         textfield.leftViewMode = .always
         
         
@@ -153,7 +188,7 @@ class RegisterViewController: BaseViewController {
     }()
     
     private lazy var scrollStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [usernameStack, emailStack, passwordStack])
+        let stack = UIStackView(arrangedSubviews: [fullNameStack, usernameStack, emailStack, passwordStack])
         stack.axis = .vertical
         stack.spacing = 16
         stack.alignment = .leading
@@ -249,13 +284,17 @@ class RegisterViewController: BaseViewController {
             scrollView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
             scrollView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
             scrollView.topAnchor.constraint(equalTo: signUpLabel.bottomAnchor, constant: 20),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -400),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -316),
             
             scrollStack.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
             scrollStack.leftAnchor.constraint(equalTo: scrollView.leftAnchor, constant: 0),
             scrollStack.rightAnchor.constraint(equalTo: scrollView.rightAnchor, constant: 0),
             scrollStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 0),
             scrollStack.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            fullNameStack.leftAnchor.constraint(equalTo: scrollStack.leftAnchor, constant: 20),
+            fullNameStack.rightAnchor.constraint(equalTo: scrollStack.rightAnchor, constant: -20),
+            fullNameTextField.heightAnchor.constraint(equalToConstant: 48),
             
             usernameStack.leftAnchor.constraint(equalTo: scrollStack.leftAnchor, constant: 20),
             usernameStack.rightAnchor.constraint(equalTo: scrollStack.rightAnchor, constant: -20),
@@ -308,6 +347,7 @@ class RegisterViewController: BaseViewController {
     }
     
     fileprivate func fieldReset() {
+        fullNameTextField.text = ""
         usernameTextField.text = ""
         emailTextField.text = ""
         passwordTextField.text = ""
@@ -318,7 +358,7 @@ class RegisterViewController: BaseViewController {
     }
     
     @objc fileprivate func registerButtonTapped() {
-        viewModel.setInput(username: usernameTextField.text!, password: passwordTextField.text!, email: emailTextField.text!)
+        viewModel.setInput(fullname: fullNameTextField.text!, username: usernameTextField.text!, password: passwordTextField.text!, email: emailTextField.text!)
         if viewModel.isUserInputValid() {
             viewModel.saveUser()
             delegate?.didRegister()
@@ -332,6 +372,14 @@ class RegisterViewController: BaseViewController {
 }
 
 extension RegisterViewController: RegisterViewModelDelegate {
+    func fullnameError() {
+        fullNameTextField.errorBorderOn()
+    }
+    
+    func fullnameValid() {
+        fullNameTextField.errorBorderOff()
+    }
+    
     func usernameError() {
         usernameTextField.errorBorderOn()
     }

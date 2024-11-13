@@ -9,6 +9,13 @@ import Foundation
 import UIKit
 
 extension String {
+    func isFullNameValid() -> Bool {
+        let fullNameRegex = "^(?=.*[a-zA-Z]{2})[a-zA-Z\\s]*$"
+        let fullNamePredicate = NSPredicate(format: "SELF MATCHES %@", fullNameRegex)
+        
+        return fullNamePredicate.evaluate(with: self)
+    }
+    
     func isValidEmail() -> Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailRegex)
