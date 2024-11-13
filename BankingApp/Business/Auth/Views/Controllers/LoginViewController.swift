@@ -158,7 +158,6 @@ class LoginViewController: BaseViewController {
     }()
     
     private let viewModel: LoginViewModel
-    private var isLogged: Bool = false
     
     init(viewModel: LoginViewModel) {
         self.viewModel = viewModel

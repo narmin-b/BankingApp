@@ -9,11 +9,13 @@ import Foundation
 import RealmSwift
 
 protocol RegisterViewModelDelegate: AnyObject {
-    func fullnameError()
+    func firstnameError()
+    func lastnameError()
     func usernameError()
     func passwordError()
     func emailError()
-    func fullnameValid()
+    func firstnameValid()
+    func lastnameValid()
     func usernameValid()
     func passwordValid()
     func emailValid()
@@ -24,13 +26,15 @@ final class RegisterViewModel {
     let realm = try! Realm()
     weak var delegate: RegisterViewModelDelegate?
     
-    var fullname = ""
+    var firstName = ""
+    var lastName = ""
     var username = ""
     var password = ""
     var email = ""
     
-    func setInput(fullname: String, username: String, password: String, email: String) {
-        self.fullname = fullname
+    func setInput(firstName: String, lastName: String, username: String, password: String, email: String) {
+        self.firstName = firstName
+        self.lastName = lastName
         self.username = username
         self.password = password
         self.email = email
@@ -38,10 +42,15 @@ final class RegisterViewModel {
     
     func isUserInputValid() -> Bool {
         
-        if !fullname.isFullNameValid() {
-            delegate?.fullnameError()
+        if !firstName.isFullNameValid() {
+            delegate?.firstnameError()
         } else {
-            delegate?.fullnameValid()
+            delegate?.firstnameValid()
+        }
+        if !lastName.isFullNameValid() {
+            delegate?.lastnameError()
+        } else {
+            delegate?.lastnameValid()
         }
         if !username.isUsernameValid() {
             delegate?.usernameError()
@@ -58,12 +67,13 @@ final class RegisterViewModel {
         } else {
             delegate?.emailValid()
         }
-        return (fullname.isFullNameValid() && username.isUsernameValid() && password.isPasswordValid() && email.isValidEmail())
+        return ((firstName.isFullNameValid() || lastName.isFullNameValid()) && username.isUsernameValid() && password.isPasswordValid() && email.isValidEmail())
     }
     
     func saveUser() {
         let user = User()
-        user.fullName = fullname
+        user.firstName = firstName
+        user.lastName = lastName
         user.username = username
         user.email = email
         user.password = password

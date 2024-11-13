@@ -10,7 +10,8 @@ import RealmSwift
 
 class User: Object {
     @Persisted(primaryKey: true) var _id: ObjectId
-    @Persisted var fullName: String!
+    @Persisted var firstName: String!
+    @Persisted var lastName: String!
     @Persisted var username: String!
     @Persisted var password: String?
     @Persisted var email: String?
