@@ -9,16 +9,8 @@ import Foundation
 import RealmSwift
 
 protocol RegisterViewModelDelegate: AnyObject {
-    func firstnameError()
-    func lastnameError()
-    func usernameError()
-    func passwordError()
-    func emailError()
-    func firstnameValid()
-    func lastnameValid()
-    func usernameValid()
-    func passwordValid()
-    func emailValid()
+    func fieldError(_ type: ValidationType)
+    func fieldValid(_ type: ValidationType)
 }
 
 final class RegisterViewModel {
@@ -40,34 +32,35 @@ final class RegisterViewModel {
         self.email = email
     }
     
-    func isUserInputValid() -> Bool {
-        
-        if !firstName.isFullNameValid() {
-            delegate?.firstnameError()
-        } else {
-            delegate?.firstnameValid()
+    func isValid(value: String, type: ValidationType) -> Bool {
+        switch type {
+        case .firstName, .lastName:
+            return value.isFullNameValid()
+        case .username:
+            return value.isUsernameValid()
+        case .email:
+            return value.isValidEmail()
+        case .password:
+            return value.isPasswordValid()
         }
-        if !lastName.isFullNameValid() {
-            delegate?.lastnameError()
-        } else {
-            delegate?.lastnameValid()
+    }
+    
+    func isAllInputValid() -> Bool {
+        var flag = true
+        let validations: [ValidationType : Bool] = [.firstName : isValid(value: firstName, type: .firstName),
+                                                    .lastName : isValid(value: lastName, type: .lastName),
+                                                    .username : isValid(value: username, type: .username),
+                                                    .email : isValid(value: email, type: .email),
+                                                    .password : isValid(value: password, type: .password)]
+        for (key, value) in validations {
+            if value == false {
+                delegate?.fieldError(key)
+                flag = false
+            } else {
+                delegate?.fieldValid(key)
+            }
         }
-        if !username.isUsernameValid() {
-            delegate?.usernameError()
-        } else {
-            delegate?.usernameValid()
-        }
-        if !password.isPasswordValid() {
-            delegate?.passwordError()
-        } else {
-            delegate?.passwordValid()
-        }
-        if !email.isValidEmail() {
-            delegate?.emailError()
-        } else {
-            delegate?.emailValid()
-        }
-        return (firstName.isFullNameValid() && lastName.isFullNameValid() && username.isUsernameValid() && password.isPasswordValid() && email.isValidEmail())
+        return flag
     }
     
     func saveUser() {

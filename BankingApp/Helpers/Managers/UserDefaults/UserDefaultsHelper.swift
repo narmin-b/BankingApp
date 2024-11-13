@@ -55,7 +55,6 @@ final class UserDefaultsHelper {
     }
     
     static func getInteger(key: String) -> Int {
-        print(defaults.integer(forKey: key))
         return defaults.integer(forKey: key)
     }
     

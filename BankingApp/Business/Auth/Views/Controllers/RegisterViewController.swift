@@ -395,7 +395,7 @@ class RegisterViewController: BaseViewController {
     
     @objc fileprivate func registerButtonTapped() {
         viewModel.setInput(firstName: firstNameTextField.text!, lastName: lastNameTextField.text!, username: usernameTextField.text!, password: passwordTextField.text!, email: emailTextField.text!)
-        if viewModel.isUserInputValid() {
+        if viewModel.isAllInputValid() {
             viewModel.saveUser()
             delegate?.didRegister()
             fieldReset()
@@ -408,43 +408,33 @@ class RegisterViewController: BaseViewController {
 }
 
 extension RegisterViewController: RegisterViewModelDelegate {
-    func firstnameError() {
-        firstNameTextField.errorBorderOn()
+    func fieldError(_ type: ValidationType) {
+        switch type {
+        case .firstName:
+            firstNameTextField.errorBorderOn()
+        case .lastName:
+            lastNameTextField.errorBorderOn()
+        case .username:
+            usernameTextField.errorBorderOn()
+        case .email:
+            emailTextField.errorBorderOn()
+        case .password:
+            passwordTextField.errorBorderOn()
+        }
     }
     
-    func lastnameError() {
-        lastNameTextField.errorBorderOn()
-    }
-    
-    func firstnameValid() {
-        firstNameTextField.errorBorderOff()
-    }
-    
-    func lastnameValid() {
-        lastNameTextField.errorBorderOff()
-    }
-    
-    func usernameError() {
-        usernameTextField.errorBorderOn()
-    }
-    
-    func passwordError() {
-        passwordTextField.errorBorderOn()
-    }
-    
-    func emailError() {
-        emailTextField.errorBorderOn()
-    }
-    
-    func usernameValid() {
-        usernameTextField.errorBorderOff()
-    }
-    
-    func passwordValid() {
-        passwordTextField.errorBorderOff()
-    }
-    
-    func emailValid() {
-        emailTextField.errorBorderOff()
+    func fieldValid(_ type: ValidationType) {
+        switch type {
+        case .firstName:
+            firstNameTextField.errorBorderOff()
+        case .lastName:
+            lastNameTextField.errorBorderOff()
+        case .username:
+            usernameTextField.errorBorderOff()
+        case .email:
+            emailTextField.errorBorderOff()
+        case .password:
+            passwordTextField.errorBorderOff()
+        }
     }
 }
