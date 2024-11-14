@@ -401,9 +401,6 @@ class RegisterViewController: BaseViewController {
             fieldReset()
             navigationController?.popViewController(animated: true)
         }
-        else {
-            print("Error")
-        }
     }
 }
 

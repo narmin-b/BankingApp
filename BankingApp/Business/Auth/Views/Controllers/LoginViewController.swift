@@ -10,6 +10,7 @@ import RealmSwift
 
 class LoginViewController: BaseViewController {
     let realm = try! Realm()
+    private var isKeepLoggedIn: Bool = false
     
     private lazy var loginLabel: UILabel = {
         let label = UILabel()
@@ -110,8 +111,38 @@ class LoginViewController: BaseViewController {
         return scrollView
     }()
     
+    private lazy var loggedButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "square"), for: .normal)
+        button.imageView?.tintColor = .basicText
+        button.setTitle("", for: .normal)
+        button.backgroundColor = .clear
+        button.addTarget(self, action: #selector(keepLoggedInTapped), for: .touchUpInside)
+        
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private lazy var loggedLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Keep me logged in"
+        label.font = UIFont(name: "Futura", size: 12)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var loggedStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [loggedButton, loggedLabel])
+        stack.axis = .horizontal
+        stack.spacing = 2
+        stack.alignment = .leading
+        stack.distribution = .fill
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
+    
     private lazy var scrollStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [usernameStack, passwordStack])
+        let stack = UIStackView(arrangedSubviews: [usernameStack, passwordStack, loggedStack])
         stack.axis = .vertical
         stack.spacing = 16
         stack.alignment = .leading
@@ -167,7 +198,7 @@ class LoginViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         print("Realm is located at:", realm.configuration.fileURL!)
-        UserDefaultsHelper.setInteger(key: UserDefaultsKey.loginType.rawValue, value: 0)
+        UserDefaults.standard.setValue(0, forKey: "loginType")
 
         configureViewModel()
         configureView()
@@ -214,10 +245,13 @@ class LoginViewController: BaseViewController {
             passwordStack.leftAnchor.constraint(equalTo: scrollStack.leftAnchor, constant: 20),
             passwordStack.rightAnchor.constraint(equalTo: scrollStack.rightAnchor, constant: -20),
             passwordTextField.heightAnchor.constraint(equalToConstant: 48),
+            
+            loggedStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+            loggedStack.heightAnchor.constraint(equalToConstant: 16)
         ])
         
         NSLayoutConstraint.activate([
-            loginButton.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 0),
+            loginButton.topAnchor.constraint(equalTo: loggedButton.bottomAnchor, constant: 24),
             loginButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
             loginButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
             loginButton.heightAnchor.constraint(equalToConstant: 48)
@@ -257,11 +291,20 @@ class LoginViewController: BaseViewController {
         passwordTextField.isSecureTextEntry.toggle()
     }
     
+    @objc fileprivate func keepLoggedInTapped() {
+        isKeepLoggedIn.toggle()
+
+        let imageName = isKeepLoggedIn ? "checkmark.square.fill" : "square"
+        loggedButton.setImage(UIImage(systemName: imageName), for: .normal)
+        UserDefaults.standard.setValue(isKeepLoggedIn, forKey: "isLoggedIn")
+    }
+    
     @objc fileprivate func loginButtonTapped() {
         viewModel.setInput(username: usernameTextField.text!, password: passwordTextField.text!)
         if viewModel.isUserValid() {
             usernameTextField.errorBorderOff()
             passwordTextField.errorBorderOff()
+            viewModel.saveLoggedUser()
             showMain()
         }
         else {print("error")}

@@ -20,6 +20,8 @@ final class LoginViewModel {
     
     var username = ""
     var password = ""
+    var firstName: String = ""
+    var lastName: String = ""
     
     func setInput(username: String, password: String) {
         self.username = username
@@ -29,6 +31,9 @@ final class LoginViewModel {
     func isUserValid() -> Bool {
         if let user = realm.objects(User.self).filter({$0.username == self.username}).first {
             if user.password == password {
+                firstName = user.firstName
+                lastName = user.lastName
+                saveLoggedUser()
                 return true
             }
             else {
@@ -40,5 +45,10 @@ final class LoginViewModel {
             delegate?.userError()
             return false
         }
+    }
+    
+    func saveLoggedUser() {
+        UserDefaults.standard.set(firstName, forKey: "firstname")
+        UserDefaults.standard.set(lastName, forKey: "lastname")
     }
 }

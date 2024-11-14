@@ -10,8 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
-    private var loginType = UserDefaultsHelper.getInteger(key: UserDefaultsKey.loginType.rawValue)
+    private var loginType = UserDefaults.standard.integer(forKey: "loginType")
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -20,6 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     fileprivate func start(scene: UIWindowScene) {
+        
         var newWindow: UIWindow?
         switch loginType {
         case 0:
@@ -33,9 +33,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     private func showLoginController(scene: UIWindowScene) -> UIWindow {
         let controller = LoginViewController(viewModel: LoginViewModel())
-        
         let navigationController = UINavigationController(rootViewController: controller)
-        
+       
         let newWindow = UIWindow(windowScene: scene)
         newWindow.rootViewController = navigationController
         
@@ -44,7 +43,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     private func showMainController(scene: UIWindowScene) -> UIWindow {
         let controller = MainTabBarController()
-        
         let navigationController = UINavigationController(rootViewController: controller)
         
         let newWindow = UIWindow(windowScene: scene)
@@ -55,7 +53,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func switchToLogin() {
         guard let windowScene = window?.windowScene else { return }
-
         window = showLoginController(scene: windowScene)
         window?.makeKeyAndVisible()
     }
