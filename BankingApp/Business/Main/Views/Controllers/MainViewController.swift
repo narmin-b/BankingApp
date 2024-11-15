@@ -89,7 +89,6 @@ class MainViewController: BaseViewController {
         NSLayoutConstraint.activate([
             profileStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 4),
             profileStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-//            profileStack.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
             profileStack.heightAnchor.constraint(equalToConstant: 36),
             profileIcon.widthAnchor.constraint(equalToConstant: 36),
             profileIcon.leftAnchor.constraint(equalTo: profileStack.leftAnchor, constant: 0),
