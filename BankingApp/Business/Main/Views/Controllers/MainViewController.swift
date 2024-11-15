@@ -128,5 +128,4 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
         cell.configureCell(color: color[indexPath.row])
         return cell
     }
-    
 }

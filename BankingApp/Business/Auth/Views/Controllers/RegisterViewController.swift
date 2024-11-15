@@ -38,15 +38,7 @@ class RegisterViewController: BaseViewController {
     }()
     
     private lazy var firstNameTextField: UITextField = {
-        let textfield = UITextField()
-        textfield.attributedPlaceholder = NSAttributedString(string: "First Name", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)!])
-        textfield.borderStyle = .roundedRect
-        textfield.layer.borderColor = UIColor.black.cgColor
-        textfield.layer.borderWidth = 2
-        textfield.layer.cornerRadius = 12
-        
-        textfield.leftView = iconUISetting("person")
-        textfield.leftViewMode = .always
+        let textfield = ReusableTextField(placeholder: "First Name", iconName: "person", iconSetting: nil)
         
         textfield.translatesAutoresizingMaskIntoConstraints = false
         return textfield
@@ -73,15 +65,7 @@ class RegisterViewController: BaseViewController {
     }()
     
     private lazy var lastNameTextField: UITextField = {
-        let textfield = UITextField()
-        textfield.attributedPlaceholder = NSAttributedString(string: "Last Name", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)!])
-        textfield.borderStyle = .roundedRect
-        textfield.layer.borderColor = UIColor.black.cgColor
-        textfield.layer.borderWidth = 2
-        textfield.layer.cornerRadius = 12
-        
-        textfield.leftView = iconUISetting("person")
-        textfield.leftViewMode = .always
+        let textfield = ReusableTextField(placeholder: "Last Name", iconName: "person", iconSetting: nil)
         
         textfield.translatesAutoresizingMaskIntoConstraints = false
         return textfield
@@ -108,16 +92,7 @@ class RegisterViewController: BaseViewController {
     }()
     
     private lazy var usernameTextField: UITextField = {
-        let textfield = UITextField()
-        textfield.attributedPlaceholder = NSAttributedString(string: "Username", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)!])
-        textfield.borderStyle = .roundedRect
-        textfield.layer.borderColor = UIColor.black.cgColor
-        textfield.layer.borderWidth = 2
-        textfield.layer.cornerRadius = 12
-        
-        textfield.leftView = iconUISetting("person.text.rectangle")
-        textfield.leftViewMode = .always
-        
+        let textfield = ReusableTextField(placeholder: "Username", iconName: "person.text.rectangle", iconSetting: nil)
         
         textfield.translatesAutoresizingMaskIntoConstraints = false
         return textfield
@@ -144,17 +119,8 @@ class RegisterViewController: BaseViewController {
     }()
     
     private lazy var emailTextField: UITextField = {
-        let textfield = UITextField()
-        textfield.attributedPlaceholder = NSAttributedString(string: "Email", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)!])
-        textfield.borderStyle = .roundedRect
-        textfield.layer.borderColor = UIColor.black.cgColor
-        textfield.layer.borderWidth = 2
-        textfield.layer.cornerRadius = 12
-        textfield.keyboardType = .emailAddress
-        
-        textfield.leftView = iconUISetting("envelope")
-        textfield.leftViewMode = .always
-        
+        let textfield = ReusableTextField(placeholder: "Email", iconName: "envelope", iconSetting: nil)
+
         textfield.translatesAutoresizingMaskIntoConstraints = false
         return textfield
     }()
@@ -180,15 +146,7 @@ class RegisterViewController: BaseViewController {
     }()
     
     private lazy var passwordTextField: UITextField = {
-        let textfield = UITextField()
-        textfield.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)!])
-        textfield.borderStyle = .roundedRect
-        textfield.layer.borderColor = UIColor.black.cgColor
-        textfield.layer.borderWidth = 2
-        textfield.layer.cornerRadius = 12
-        
-        textfield.leftView = iconUISetting("lock", x: 13)
-        textfield.leftViewMode = .always
+        let textfield = ReusableTextField(placeholder: "Password", iconName: "lock", iconSetting: 13)
         
         let rightIcon = UIImageView(image: UIImage(systemName: "eye.fill"))
         rightIcon.tintColor = .black

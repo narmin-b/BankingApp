@@ -33,15 +33,7 @@ class LoginViewController: BaseViewController {
     }()
     
     private lazy var usernameTextField: UITextField = {
-        let textfield = UITextField()
-        textfield.attributedPlaceholder = NSAttributedString(string: "Username", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)!])
-        textfield.borderStyle = .roundedRect
-        textfield.layer.borderColor = UIColor.black.cgColor
-        textfield.layer.borderWidth = 2
-        textfield.layer.cornerRadius = 12
-        
-        textfield.leftView = iconUISetting("person")
-        textfield.leftViewMode = .always
+        let textfield = ReusableTextField(placeholder: "Username", iconName: "person", iconSetting: nil)
         
         textfield.translatesAutoresizingMaskIntoConstraints = false
         return textfield
@@ -67,17 +59,21 @@ class LoginViewController: BaseViewController {
         return label
     }()
     
+    fileprivate func iconUISetting(_ iconName: String, x: Int = 10) -> UIView {
+        let icon = UIImageView(image: UIImage(systemName: iconName))
+        icon.tintColor = .black
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: icon.frame.height))
+        icon.frame = CGRect(x: CGFloat(integerLiteral: x), y: 0, width: icon.frame.width, height: icon.frame.height)
+        paddingView.addSubview(icon)
+        return paddingView
+    }
+    
     private lazy var passwordTextField: UITextField = {
-        let textfield = UITextField()
-        textfield.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [.foregroundColor: UIColor.lightGray, .font: UIFont(name: "Futura", size: 12)!])
-        textfield.borderStyle = .roundedRect
-        textfield.layer.borderColor = UIColor.black.cgColor
-        textfield.layer.borderWidth = 2
-        textfield.layer.cornerRadius = 12
+        let textfield = ReusableTextField(placeholder: "Password", iconName: "lock", iconSetting: nil)
 
-        textfield.leftView = iconUISetting("lock")
-        textfield.leftViewMode = .always
-        
+//        textfield.leftView = iconUISetting("lock")
+//        textfield.leftViewMode = .always
+//        
         let rightIcon = UIImageView(image: UIImage(systemName: "eye.fill"))
         rightIcon.tintColor = .black
         let rightPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: rightIcon.frame.height))
@@ -271,14 +267,7 @@ class LoginViewController: BaseViewController {
         viewModel.delegate = self
     }
     
-    fileprivate func iconUISetting(_ iconName: String, x: Int = 10) -> UIView {
-        let icon = UIImageView(image: UIImage(systemName: iconName))
-        icon.tintColor = .black
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: icon.frame.height))
-        icon.frame = CGRect(x: CGFloat(integerLiteral: x), y: 0, width: icon.frame.width, height: icon.frame.height)
-        paddingView.addSubview(icon)
-        return paddingView
-    }
+   
     
     @objc fileprivate func imageTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
         let tappedImage = tapGestureRecognizer.view as? UIImageView

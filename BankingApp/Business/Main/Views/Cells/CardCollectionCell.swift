@@ -12,7 +12,6 @@ final class CardCollectionCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-//        imageView.backgroundColor = .red
         imageView.layer.cornerRadius = 12
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -27,6 +26,7 @@ final class CardCollectionCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureView()
