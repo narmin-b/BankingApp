@@ -24,7 +24,7 @@ class MainTabBarController: UITabBarController {
     }
     
     fileprivate func setUpTabBar() {
-        let mainItem = MainViewController()
+        let mainItem = MainViewController(viewModel: MainViewModel())
         let mainIcon = UITabBarItem(title: "Home", image: UIImage(named: "mainBarIcon"), selectedImage: UIImage(named: "selectedMainBarIcon"))
         mainItem.tabBarItem = mainIcon
         

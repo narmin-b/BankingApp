@@ -70,10 +70,7 @@ class LoginViewController: BaseViewController {
     
     private lazy var passwordTextField: UITextField = {
         let textfield = ReusableTextField(placeholder: "Password", iconName: "lock", iconSetting: nil)
-
-//        textfield.leftView = iconUISetting("lock")
-//        textfield.leftViewMode = .always
-//        
+        
         let rightIcon = UIImageView(image: UIImage(systemName: "eye.fill"))
         rightIcon.tintColor = .black
         let rightPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: rightIcon.frame.height))
@@ -195,7 +192,7 @@ class LoginViewController: BaseViewController {
         super.viewDidLoad()
         print("Realm is located at:", realm.configuration.fileURL!)
         UserDefaults.standard.setValue(0, forKey: "loginType")
-
+        
         configureViewModel()
         configureView()
     }
@@ -267,8 +264,6 @@ class LoginViewController: BaseViewController {
         viewModel.delegate = self
     }
     
-   
-    
     @objc fileprivate func imageTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
         let tappedImage = tapGestureRecognizer.view as? UIImageView
         
@@ -293,7 +288,6 @@ class LoginViewController: BaseViewController {
         if viewModel.isUserValid() {
             usernameTextField.errorBorderOff()
             passwordTextField.errorBorderOff()
-            viewModel.saveLoggedUser()
             showMain()
         }
         else {print("error")}

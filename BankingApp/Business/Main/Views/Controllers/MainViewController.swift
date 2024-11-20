@@ -6,8 +6,10 @@
 //
 
 import UIKit
+import RealmSwift
 
 class MainViewController: BaseViewController {
+    let realm = try! Realm()
     let color = [UIColor.red, UIColor.blue]
     
     private lazy var profileIcon: UIImageView = {
@@ -21,8 +23,9 @@ class MainViewController: BaseViewController {
     
     private lazy var profileInfo: UILabel = {
         let label = UILabel()
-        label.text = "Hi, " + (UserDefaults.standard.string(forKey: "firstname") ?? "") + "!"
+        let user = UserDefaults.standard.string(forKey: "userID")?.userForIDstring()
         
+        label.text = "Hi, " + (user?.firstName ?? "") + "!"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -63,12 +66,33 @@ class MainViewController: BaseViewController {
 
         return collectionView
     }()
+    
+    private lazy var loadingView: UIActivityIndicatorView = {
+        let v = UIActivityIndicatorView(style: .large)
+        v.tintColor = .red
+        return v
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("Realm is located at:", realm.configuration.fileURL!)
         isLoggedIn()
         
         configureView()
+        configureViewModel()
+    }
+    
+    
+    
+    private let viewModel: MainViewModel
+    
+    init(viewModel: MainViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @MainActor required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewWillLayoutSubviews() {
@@ -81,8 +105,21 @@ class MainViewController: BaseViewController {
         view.addSubview(profileStack)
         cardView.addSubview(cardCollection)
         view.addSubview(cardView)
+        view.addSubview(loadingView)
         
         configureConstraint()
+    }
+    
+    fileprivate func configureViewModel() {
+        viewModel.listener = { [weak self] state in
+            guard let self else {return}
+            switch state {
+            case .loading:
+                self.loadingView.startAnimating()
+            case .loaded:
+                self.loadingView.stopAnimating()
+            }
+        }
     }
     
     override func configureConstraint() {
@@ -109,6 +146,12 @@ class MainViewController: BaseViewController {
             cardCollection.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -20)
         ])
         
+        NSLayoutConstraint.activate([
+            loadingView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
+            loadingView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
+            loadingView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
+            loadingView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0),
+        ])
     }
     
     fileprivate func isLoggedIn() {
@@ -116,6 +159,7 @@ class MainViewController: BaseViewController {
             UserDefaults.standard.setValue(1, forKey: "loginType")
         }
     }
+    
 }
 
 extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSource {

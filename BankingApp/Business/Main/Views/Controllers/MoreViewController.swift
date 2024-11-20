@@ -29,7 +29,7 @@ class MoreViewController: UIViewController {
     fileprivate func configureConstraint() {
         NSLayoutConstraint.activate([
             logOutButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-            logOutButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 20),
+            logOutButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
             logOutButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             logOutButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             logOutButton.heightAnchor.constraint(equalToConstant: 48)
@@ -37,8 +37,7 @@ class MoreViewController: UIViewController {
     }
     
     @objc private func logOutButtonTapped() {
-        UserDefaults.standard.set("", forKey: "firstname")
-        UserDefaults.standard.set("", forKey: "lastname")
+        UserDefaults.standard.set("", forKey: "userID")
         UserDefaults.standard.set(false, forKey: "isLoggedIn")
         showLogin()
     }

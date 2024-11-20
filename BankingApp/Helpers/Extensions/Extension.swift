@@ -7,6 +7,10 @@
 
 import Foundation
 import UIKit
+import RealmSwift
+
+let realm = try! Realm()
+
 
 extension String {
     func isFullNameValid() -> Bool {
@@ -88,4 +92,15 @@ extension UITableView {
 
         return view
     }
+}
+
+extension String {
+    func userForIDstring() -> User {
+        guard /*let userIDString = UserDefaults.standard.string(forKey: "userID"),*/
+              let userID = try? ObjectId(string: self) else { return User() }
+        let user = realm.object(ofType: User.self, forPrimaryKey: userID)
+        
+        return user ?? User()
+    }
+    
 }

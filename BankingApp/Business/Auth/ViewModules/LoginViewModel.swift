@@ -33,7 +33,7 @@ final class LoginViewModel {
             if user.password == password {
                 firstName = user.firstName
                 lastName = user.lastName
-                saveLoggedUser()
+                saveLoggedUser(id: user._id)
                 return true
             }
             else {
@@ -47,8 +47,8 @@ final class LoginViewModel {
         }
     }
     
-    func saveLoggedUser() {
-        UserDefaults.standard.set(firstName, forKey: "firstname")
-        UserDefaults.standard.set(lastName, forKey: "lastname")
+    func saveLoggedUser(id: ObjectId) {
+        let strID = id.stringValue
+        UserDefaults.standard.set(strID, forKey: "userID")
     }
 }
