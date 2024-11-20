@@ -13,12 +13,13 @@ final class MainViewModel {
         case loaded
     }
     
-    var listener: ((ViewState) -> Void)?
-
-    init() {
-        self.listener?(.loading)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.listener?(.loaded)
+    var listener: ((ViewState) -> Void)?{
+        didSet {
+            listener?(.loading)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                self.listener?(.loaded)
+            }
         }
     }
 }

@@ -68,9 +68,10 @@ class MainViewController: BaseViewController {
     }()
     
     private lazy var loadingView: UIActivityIndicatorView = {
-        let v = UIActivityIndicatorView(style: .large)
-        v.tintColor = .red
-        return v
+        let view = UIActivityIndicatorView(style: .large)
+        view.tintColor = .red
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
     }()
 
     override func viewDidLoad() {
@@ -78,11 +79,9 @@ class MainViewController: BaseViewController {
         print("Realm is located at:", realm.configuration.fileURL!)
         isLoggedIn()
         
+//        configureViewModel()
         configureView()
-        configureViewModel()
     }
-    
-    
     
     private let viewModel: MainViewModel
     
@@ -110,19 +109,26 @@ class MainViewController: BaseViewController {
         configureConstraint()
     }
     
-    fileprivate func configureViewModel() {
-        viewModel.listener = { [weak self] state in
-            guard let self else {return}
-            switch state {
-            case .loading:
-                self.loadingView.startAnimating()
-            case .loaded:
-                self.loadingView.stopAnimating()
-            }
-        }
-    }
+//    fileprivate func configureViewModel() {
+//        viewModel.listener = { [weak self] state in
+//            guard let self else {return}
+//            switch state {
+//            case .loading:
+//                self.loadingView.startAnimating()
+//            case .loaded:
+//                self.loadingView.stopAnimating()
+//            }
+//        }
+//    }
     
     override func configureConstraint() {
+        NSLayoutConstraint.activate([
+            loadingView.topAnchor.constraint(equalTo: view.topAnchor),
+            loadingView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            loadingView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            loadingView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        
         NSLayoutConstraint.activate([
             profileStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 4),
             profileStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
@@ -144,13 +150,6 @@ class MainViewController: BaseViewController {
             cardCollection.leftAnchor.constraint(equalTo: cardView.leftAnchor, constant: 12),
             cardCollection.rightAnchor.constraint(equalTo: cardView.rightAnchor, constant: -12),
             cardCollection.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -20)
-        ])
-        
-        NSLayoutConstraint.activate([
-            loadingView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
-            loadingView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
-            loadingView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
-            loadingView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0),
         ])
     }
     
