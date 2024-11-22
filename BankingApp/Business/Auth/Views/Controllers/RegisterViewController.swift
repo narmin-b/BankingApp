@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import RealmSwift
 
 protocol RegisterViewControllerDelegate: AnyObject {
     func didRegister()
@@ -14,25 +13,16 @@ protocol RegisterViewControllerDelegate: AnyObject {
 
 class RegisterViewController: BaseViewController {
     
-    let realm = try! Realm()
     weak var delegate: RegisterViewControllerDelegate?
     
     private lazy var signUpLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Register"
-        label.textColor = .black
-        label.textAlignment = .left
-        label.font = UIFont(name: "Futura", size: 32)
+        let label = ReusableLabel(labelText: "Register", labelFont: UIFont(name: "Futura", size: 32))
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private lazy var firstNameLabel: UILabel = {
-        let label = UILabel()
-        label.text = "First Name"
-        label.textColor = .basicText
-        label.textAlignment = .left
-        label.font = UIFont(name: "Futura", size: 12)
+        let label = ReusableLabel(labelText: "First Name")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -55,11 +45,7 @@ class RegisterViewController: BaseViewController {
     }()
     
     private lazy var lastNameLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Last Name"
-        label.textColor = .basicText
-        label.textAlignment = .left
-        label.font = UIFont(name: "Futura", size: 12)
+        let label = ReusableLabel(labelText: "Last Name")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -82,11 +68,7 @@ class RegisterViewController: BaseViewController {
     }()
     
     private lazy var usernameLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Username"
-        label.textColor = .black
-        label.textAlignment = .left
-        label.font = UIFont(name: "Futura", size: 12)
+        let label = ReusableLabel(labelText: "Username")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -109,11 +91,7 @@ class RegisterViewController: BaseViewController {
     }()
     
     private lazy var emailLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Email"
-        label.textColor = .black
-        label.textAlignment = .left
-        label.font = UIFont(name: "Futura", size: 12)
+        let label = ReusableLabel(labelText: "Email")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -136,11 +114,7 @@ class RegisterViewController: BaseViewController {
     }()
     
     private lazy var passwordLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Password"
-        label.textColor = .black
-        label.textAlignment = .left
-        label.font = UIFont(name: "Futura", size: 12)
+        let label = ReusableLabel(labelText: "Password")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -198,9 +172,7 @@ class RegisterViewController: BaseViewController {
     }()
     
     private lazy var loginLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Already have an account?"
-        label.font = UIFont(name: "Futura", size: 12)
+        let label = ReusableLabel(labelText: "Already have an account?")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -242,23 +214,27 @@ class RegisterViewController: BaseViewController {
         configureViewModel()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        firstNameTextField.errorBorderOff()
+        lastNameTextField.errorBorderOff()
+        emailTextField.errorBorderOff()
+        passwordTextField.errorBorderOff()
+        usernameTextField.errorBorderOff()
+    }
+    
     fileprivate func configureViewModel() {
         viewModel.delegate = self
     }
     
     fileprivate func configureScrollView() {
-        view.addSubview(scrollView)
         scrollView.addSubview(scrollStack)
     }
     
     override func configureView() {
         super.configureView()
 
-        view.addSubview(signUpLabel)
+        view.addSubViews(signUpLabel, scrollView, registerButton, loginStack)
         configureScrollView()
-        view.addSubview(registerButton)
-        view.addSubview(loginStack)
-        
         configureConstraint()
     }
     
@@ -331,11 +307,7 @@ class RegisterViewController: BaseViewController {
     @objc fileprivate func imageTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
         let tappedImage = tapGestureRecognizer.view as? UIImageView
         
-        if passwordTextField.isSecureTextEntry {
-            tappedImage?.image = UIImage(systemName: "eye.fill")
-        } else {
-            tappedImage?.image = UIImage(systemName: "eye.slash.fill")
-        }
+        tappedImage?.image = UIImage(systemName: passwordTextField.isSecureTextEntry ? "eye.fill" : "eye.slash.fill")
         passwordTextField.isSecureTextEntry.toggle()
     }
     
@@ -367,14 +339,19 @@ extension RegisterViewController: RegisterViewModelDelegate {
         switch type {
         case .firstName:
             firstNameTextField.errorBorderOn()
+            showMessage(title: "Error", message: "First name is required")
         case .lastName:
             lastNameTextField.errorBorderOn()
+            showMessage(title: "Error", message: "Last name is required")
         case .username:
             usernameTextField.errorBorderOn()
+            showMessage(title: "Error", message: "Username is required")
         case .email:
             emailTextField.errorBorderOn()
+            showMessage(title: "Error", message: "Email is required")
         case .password:
             passwordTextField.errorBorderOn()
+            showMessage(title: "Error", message: "Password is required")
         }
     }
     

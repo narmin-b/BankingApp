@@ -6,10 +6,8 @@
 //
 
 import UIKit
-import RealmSwift
 
 class MainViewController: BaseViewController {
-    let realm = try! Realm()
     let color = [UIColor.red, UIColor.blue]
     
     private lazy var profileIcon: UIImageView = {
@@ -76,7 +74,6 @@ class MainViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("Realm is located at:", realm.configuration.fileURL!)
         isLoggedIn()
         
 //        configureViewModel()
@@ -100,12 +97,13 @@ class MainViewController: BaseViewController {
         self.navigationController?.navigationBar.isHidden = true
     }
     
+    fileprivate func configureCardView() {
+        cardView.addSubViews(cardCollection)
+    }
+    
     override func configureView() {
-        view.addSubview(profileStack)
-        cardView.addSubview(cardCollection)
-        view.addSubview(cardView)
-        view.addSubview(loadingView)
-        
+        view.addSubViews(profileStack, cardView, loadingView)
+        configureCardView()
         configureConstraint()
     }
     
@@ -158,7 +156,12 @@ class MainViewController: BaseViewController {
             UserDefaults.standard.setValue(1, forKey: "loginType")
         }
     }
-    
+        
+    func generateCards() -> Card? {
+        let user = UserDefaults.standard.string(forKey: "userID")?.userForIDstring()
+//        let card = RealmHelper.fetchObjects(Card.self).first(where: { $0.owner == user })
+        return RealmHelper.fetchObjects(Card.self).first(where: { $0.owner == user })
+    }
 }
 
 extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -168,7 +171,7 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardCollectionCell", for: indexPath) as! CardCollectionCell
-        cell.configureCell(color: color[indexPath.row])
+        cell.configureCell(color: color[indexPath.row], card: generateCards() ?? Card())
         return cell
     }
 }

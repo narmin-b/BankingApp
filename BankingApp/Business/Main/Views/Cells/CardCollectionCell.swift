@@ -36,13 +36,14 @@ final class CardCollectionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell(color: UIColor) {
+    func configureCell(color: UIColor, card: Card) {
         cardImageView.backgroundColor = color
+        cardTitleLabel.text = card.cardType
     }
     
     fileprivate func configureView() {
-        cardImageView.addSubview(cardTitleLabel)
-        addSubview(cardImageView)
+        cardImageView.addSubViews(cardTitleLabel)
+        addSubViews(cardImageView)
         
         configureConstraints()
     }

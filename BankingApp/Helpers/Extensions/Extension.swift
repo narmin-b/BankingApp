@@ -9,9 +9,6 @@ import Foundation
 import UIKit
 import RealmSwift
 
-let realm = try! Realm()
-
-
 extension String {
     func isFullNameValid() -> Bool {
         let fullNameRegex = "^(?=.*[a-zA-Z]{2})[a-zA-Z\\s]*$"
@@ -39,6 +36,13 @@ extension String {
         let passwordPredicate = NSPredicate(format:"SELF MATCHES %@", passwordRegex)
         
         return passwordPredicate.evaluate(with: self)
+    }
+    
+    func userForIDstring() -> User {
+        guard let userID = try? ObjectId(string: self) else { return User() }
+        let user = RealmHelper.fetchObject(User.self, primaryKey: userID)
+        
+        return user ?? User()
     }
 }
 
@@ -94,13 +98,30 @@ extension UITableView {
     }
 }
 
-extension String {
-    func userForIDstring() -> User {
-        guard /*let userIDString = UserDefaults.standard.string(forKey: "userID"),*/
-              let userID = try? ObjectId(string: self) else { return User() }
-        let user = realm.object(ofType: User.self, forPrimaryKey: userID)
-        
-        return user ?? User()
+extension UIView {
+    func addSubViews(_ views: UIView...) {
+        views.forEach{addSubview($0)}
     }
-    
+}
+
+extension UIStackView {
+    func addArrangedSubViews(_ views: UIView...) {
+        views.forEach{addArrangedSubview($0)}
+    }
+}
+
+extension UIViewController {
+    func showMessage(
+        title: String = "",
+        message: String = "",
+        actionTitle: String = "OK"
+    ) {
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: UIAlertController.Style.alert
+        )
+        alert.addAction(UIAlertAction(title: actionTitle, style: UIAlertAction.Style.default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
 }

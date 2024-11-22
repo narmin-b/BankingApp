@@ -6,28 +6,18 @@
 //
 
 import UIKit
-import RealmSwift
 
 class LoginViewController: BaseViewController {
-    let realm = try! Realm()
     private var isKeepLoggedIn: Bool = false
     
     private lazy var loginLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Log Back In"
-        label.textColor = .basicText
-        label.textAlignment = .left
-        label.font = UIFont(name: "Futura", size: 32)
+        let label = ReusableLabel(labelText: "Log Back In", labelFont: UIFont(name: "Futura", size: 32))
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private lazy var usernameLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Username"
-        label.textColor = .basicText
-        label.textAlignment = .left
-        label.font = UIFont(name: "Futura", size: 12)
+        let label = ReusableLabel(labelText: "Username")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -50,11 +40,7 @@ class LoginViewController: BaseViewController {
     }()
     
     private lazy var passwordLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Password"
-        label.textColor = .basicText
-        label.textAlignment = .left
-        label.font = UIFont(name: "Futura", size: 12)
+        let label = ReusableLabel(labelText: "Password")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -117,9 +103,7 @@ class LoginViewController: BaseViewController {
     }()
     
     private lazy var loggedLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Keep me logged in"
-        label.font = UIFont(name: "Futura", size: 12)
+        let label = ReusableLabel(labelText: "Keep me logged in")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -152,9 +136,7 @@ class LoginViewController: BaseViewController {
     }()
     
     private lazy var registerLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Don't have an account yet?"
-        label.font = UIFont(name: "Futura", size: 12)
+        let label = ReusableLabel(labelText: "Don't have an account yet?")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -190,24 +172,25 @@ class LoginViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("Realm is located at:", realm.configuration.fileURL!)
         UserDefaults.standard.setValue(0, forKey: "loginType")
         
         configureViewModel()
         configureView()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        passwordTextField.errorBorderOff()
+        usernameTextField.errorBorderOff()
+    }
+    
     fileprivate func configureScrollView() {
-        view.addSubview(scrollView)
-        scrollView.addSubview(scrollStack)
+        scrollView.addSubViews(scrollStack)
     }
     
     override func configureView() {
         super.configureView()
-        view.addSubview(loginLabel)
+        view.addSubViews(loginLabel, scrollView, loginButton, registerStack)
         configureScrollView()
-        view.addSubview(loginButton)
-        view.addSubview(registerStack)
         
         configureConstraint()
     }
@@ -261,17 +244,26 @@ class LoginViewController: BaseViewController {
     }
     
     fileprivate func configureViewModel() {
-        viewModel.delegate = self
+        viewModel.listener = { [weak self] state in
+            guard let self else {return}
+            switch state {
+            case .error(let message):
+                showMessage(title: "Error", message: message)
+            case .success:
+                print(#function)
+            case .userError:
+                usernameTextField.errorBorderOn()
+                passwordTextField.errorBorderOn()
+            case .passwordError:
+                passwordTextField.errorBorderOn()
+            }
+        }
     }
     
     @objc fileprivate func imageTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
         let tappedImage = tapGestureRecognizer.view as? UIImageView
         
-        if passwordTextField.isSecureTextEntry {
-            tappedImage?.image = UIImage(systemName: "eye.fill")
-        } else {
-            tappedImage?.image = UIImage(systemName: "eye.slash.fill")
-        }
+        tappedImage?.image = UIImage(systemName: passwordTextField.isSecureTextEntry ? "eye.fill" : "eye.slash.fill")
         passwordTextField.isSecureTextEntry.toggle()
     }
     
@@ -308,7 +300,7 @@ class LoginViewController: BaseViewController {
 
 extension LoginViewController: RegisterViewControllerDelegate {
     func didRegister() {
-        let user = realm.objects(User.self).last
+        let user = RealmHelper.fetchObjects(User.self).last
         usernameTextField.text = user?.username
         passwordTextField.text = user?.password
     }
@@ -317,12 +309,10 @@ extension LoginViewController: RegisterViewControllerDelegate {
 extension LoginViewController: LoginViewModelDelegate {
     
     func userError() {
-        usernameTextField.errorBorderOn()
-        passwordTextField.errorBorderOn()
+        
     }
     
     func passwordError() {
-        passwordTextField.errorBorderOn()
     }
     
 }

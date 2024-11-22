@@ -14,14 +14,20 @@ protocol LoginViewModelDelegate: AnyObject {
 }
 
 final class LoginViewModel {
+    enum ViewState {
+        case error(String)
+        case userError
+        case passwordError
+        case success
+    }
     
-    let realm = try! Realm()
+    var listener: ((ViewState) -> Void)?
     weak var delegate: LoginViewModelDelegate?
     
-    var username = ""
-    var password = ""
-    var firstName: String = ""
-    var lastName: String = ""
+    private var username = ""
+    private var password = ""
+    private var firstName: String = ""
+    private var lastName: String = ""
     
     func setInput(username: String, password: String) {
         self.username = username
@@ -29,7 +35,7 @@ final class LoginViewModel {
     }
 
     func isUserValid() -> Bool {
-        if let user = realm.objects(User.self).filter({$0.username == self.username}).first {
+        if let user = RealmHelper.fetchObjects(User.self).filter({$0.username == self.username}).first {
             if user.password == password {
                 firstName = user.firstName
                 lastName = user.lastName

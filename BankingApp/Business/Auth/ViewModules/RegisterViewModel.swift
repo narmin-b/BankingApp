@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import RealmSwift
 
 protocol RegisterViewModelDelegate: AnyObject {
     func fieldError(_ type: ValidationType)
@@ -15,14 +14,13 @@ protocol RegisterViewModelDelegate: AnyObject {
 
 final class RegisterViewModel {
     
-    let realm = try! Realm()
     weak var delegate: RegisterViewModelDelegate?
     
-    var firstName = ""
-    var lastName = ""
-    var username = ""
-    var password = ""
-    var email = ""
+    private var firstName = ""
+    private var lastName = ""
+    private var username = ""
+    private var password = ""
+    private var email = ""
     
     func setInput(firstName: String, lastName: String, username: String, password: String, email: String) {
         self.firstName = firstName
@@ -71,8 +69,6 @@ final class RegisterViewModel {
         user.email = email
         user.password = password
         
-        try? realm.write {
-            realm.add(user)
-        }
+        RealmHelper.addObject(user)
     }
 }

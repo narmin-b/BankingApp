@@ -21,7 +21,7 @@ class MoreViewController: UIViewController {
     }
     
     fileprivate func configureView() {
-        view.addSubview(logOutButton)
+        view.addSubViews(logOutButton)
         
         configureConstraint()
     }

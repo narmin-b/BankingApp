@@ -22,4 +22,10 @@ final class MainViewModel {
             }
         }
     }
+    
+//    func generateCards() -> Card {
+//        let user = UserDefaults.standard.string(forKey: "userID")?.userForIDstring()
+//        let card = realm.objects(Card.self).first(where: { $0.owner == user }) ?? Card()
+//        return card
+//    }
 }
