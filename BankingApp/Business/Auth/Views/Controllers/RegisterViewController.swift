@@ -195,14 +195,14 @@ class RegisterViewController: BaseViewController {
         return stack
     }()
     
-    private let viewModel: RegisterViewModel
+    private var viewModel: RegisterViewModel
     
     init(viewModel: RegisterViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
-    required init?(coder: NSCoder) {
+    @MainActor required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -223,7 +223,17 @@ class RegisterViewController: BaseViewController {
     }
     
     fileprivate func configureViewModel() {
-        viewModel.delegate = self
+        viewModel.listener = { [weak self] state in
+            guard let self else {return}
+            switch state {
+            case .error(message: let message):
+                showMessage(title: message)
+            case .fieldError:
+                <#code#>
+            case .fieldValid:
+                <#code#>
+            }
+        }
     }
     
     fileprivate func configureScrollView() {

@@ -16,3 +16,13 @@ class User: Object {
     @Persisted var password: String?
     @Persisted var email: String?
 }
+
+extension User {
+    func mapFrom(from model: UserDataModel){
+        self.firstName = model.firstName
+        self.lastName = model.lastName
+        self.username = model.username
+        self.password = model.password
+        self.email = model.email
+    }
+}

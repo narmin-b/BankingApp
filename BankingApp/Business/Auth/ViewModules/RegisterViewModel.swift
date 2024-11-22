@@ -13,21 +13,28 @@ protocol RegisterViewModelDelegate: AnyObject {
 }
 
 final class RegisterViewModel {
+    enum ViewState {
+        case error(message: String)
+        case fieldError
+        case fieldValid
+    }
     
-    weak var delegate: RegisterViewModelDelegate?
+    var listener: ((ViewState) -> Void)?
+//    weak var delegate: RegisterViewModelDelegate?
     
-    private var firstName = ""
-    private var lastName = ""
-    private var username = ""
-    private var password = ""
-    private var email = ""
+    private var model: UserDataModel = UserDataModel()
+//    private var firstName = ""
+//    private var lastName = ""
+//    private var username = ""
+//    private var password = ""
+//    private var email = ""
     
     func setInput(firstName: String, lastName: String, username: String, password: String, email: String) {
-        self.firstName = firstName
-        self.lastName = lastName
-        self.username = username
-        self.password = password
-        self.email = email
+        model.firstName = firstName
+        model.lastName = lastName
+        model.username = username
+        model.password = password
+        model.email = email
     }
     
     func isValid(value: String, type: ValidationType) -> Bool {
@@ -45,11 +52,11 @@ final class RegisterViewModel {
     
     func isAllInputValid() -> Bool {
         var flag = true
-        let validations: [ValidationType : Bool] = [.firstName : isValid(value: firstName, type: .firstName),
-                                                    .lastName : isValid(value: lastName, type: .lastName),
-                                                    .username : isValid(value: username, type: .username),
-                                                    .email : isValid(value: email, type: .email),
-                                                    .password : isValid(value: password, type: .password)]
+        let validations: [ValidationType : Bool] = [.firstName : isValid(value: model.firstName, type: .firstName),
+                                                    .lastName : isValid(value: model.lastName, type: .lastName),
+                                                    .username : isValid(value: model.username, type: .username),
+                                                    .email : isValid(value: model.email, type: .email),
+                                                    .password : isValid(value: model.password, type: .password)]
         for (key, value) in validations {
             if value == false {
                 delegate?.fieldError(key)
@@ -63,12 +70,14 @@ final class RegisterViewModel {
     
     func saveUser() {
         let user = User()
-        user.firstName = firstName
-        user.lastName = lastName
-        user.username = username
-        user.email = email
-        user.password = password
-        
+        user.mapFrom(from: model)
         RealmHelper.addObject(user)
     }
 }
+
+//        user.firstName = firstName
+//        user.lastName = lastName
+//        user.username = username
+//        user.email = email
+//        user.password = password
+//

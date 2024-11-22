@@ -11,7 +11,7 @@ struct UserDataModel {
     var firstName: String!
     var lastName: String!
     var username: String!
-    var password: String?
-    var email: String?
+    var password: String!
+    var email: String!
 }
 
