@@ -8,11 +8,6 @@
 import Foundation
 import RealmSwift
 
-protocol LoginViewModelDelegate: AnyObject {
-    func userError()
-    func passwordError()
-}
-
 final class LoginViewModel {
     enum ViewState {
         case error(String)
@@ -22,33 +17,32 @@ final class LoginViewModel {
     }
     
     var listener: ((ViewState) -> Void)?
-    weak var delegate: LoginViewModelDelegate?
     
-    private var username = ""
-    private var password = ""
-    private var firstName: String = ""
-    private var lastName: String = ""
+    private var model: UserDataModel = UserDataModel()
     
     func setInput(username: String, password: String) {
-        self.username = username
-        self.password = password
+        model.username = username
+        model.password = password
     }
 
     func isUserValid() -> Bool {
-        if let user = RealmHelper.fetchObjects(User.self).filter({$0.username == self.username}).first {
-            if user.password == password {
-                firstName = user.firstName
-                lastName = user.lastName
+        if let user = RealmHelper.fetchObjects(User.self).filter({$0.username == self.model.username}).first {
+            if user.password == model.password {
+                model.firstName = user.firstName
+                model.lastName = user.lastName
                 saveLoggedUser(id: user._id)
+                listener?(.success)
                 return true
             }
             else {
-                delegate?.passwordError()
+                listener?(.passwordError)
+                listener?(.error("Wrong Password"))
                 return false
             }
         }
         else {
-            delegate?.userError()
+            listener?(.userError)
+            listener?(.error("User does not exist"))
             return false
         }
     }

@@ -282,7 +282,6 @@ class LoginViewController: BaseViewController {
             passwordTextField.errorBorderOff()
             showMain()
         }
-        else {print("error")}
     }
     
     fileprivate func showMain() {
@@ -306,13 +305,13 @@ extension LoginViewController: RegisterViewControllerDelegate {
     }
 }
 
-extension LoginViewController: LoginViewModelDelegate {
-    
-    func userError() {
-        
-    }
-    
-    func passwordError() {
-    }
-    
-}
+//extension LoginViewController: LoginViewModelDelegate {
+//    
+//    func userError() {
+//        
+//    }
+//    
+//    func passwordError() {
+//    }
+//    
+//}

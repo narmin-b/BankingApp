@@ -8,8 +8,6 @@
 import UIKit
 
 class MainViewController: BaseViewController {
-    let color = [UIColor.red, UIColor.blue]
-    
     private lazy var profileIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "person.crop.circle")
@@ -65,9 +63,14 @@ class MainViewController: BaseViewController {
         return collectionView
     }()
     
+    private lazy var transferButton: UIButton = {
+        let button = ReusableButton(title: "Transfer Money", onAction: transferButtonTapped)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     private lazy var loadingView: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView(style: .large)
-        view.tintColor = .red
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -75,8 +78,10 @@ class MainViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         isLoggedIn()
+        let user = UserDefaults.standard.string(forKey: "userID")?.userForIDstring()
+        print(Array(RealmHelper.fetchObjects(Card.self).filter({$0.owner == user })))
         
-//        configureViewModel()
+        configureViewModel()
         configureView()
     }
     
@@ -87,7 +92,7 @@ class MainViewController: BaseViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
-    @MainActor required init?(coder: NSCoder) {
+     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -98,35 +103,35 @@ class MainViewController: BaseViewController {
     }
     
     fileprivate func configureCardView() {
-        cardView.addSubViews(cardCollection)
+        cardView.addSubViews(loadingView, cardCollection)
     }
     
     override func configureView() {
-        view.addSubViews(profileStack, cardView, loadingView)
+        view.addSubViews(profileStack, cardView, transferButton)
         configureCardView()
         configureConstraint()
+        
     }
     
-//    fileprivate func configureViewModel() {
-//        viewModel.listener = { [weak self] state in
-//            guard let self else {return}
-//            switch state {
-//            case .loading:
-//                self.loadingView.startAnimating()
-//            case .loaded:
-//                self.loadingView.stopAnimating()
-//            }
-//        }
-//    }
+    fileprivate func configureViewModel() {
+        viewModel.listener = { [weak self] state in
+            guard let self else {return}
+            switch state {
+            case .loading:
+                self.loadingView.startAnimating()
+            case .loaded:
+                self.loadingView.stopAnimating()
+            case .error(let message):
+                showMessage(title: message)
+            case .success:
+                print("card found")
+            case .noCards:
+                showMessage(title: "No card Found")
+            }
+        }
+    }
     
     override func configureConstraint() {
-        NSLayoutConstraint.activate([
-            loadingView.topAnchor.constraint(equalTo: view.topAnchor),
-            loadingView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            loadingView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            loadingView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
-        
         NSLayoutConstraint.activate([
             profileStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 4),
             profileStack.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
@@ -147,7 +152,19 @@ class MainViewController: BaseViewController {
             cardCollection.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 20),
             cardCollection.leftAnchor.constraint(equalTo: cardView.leftAnchor, constant: 12),
             cardCollection.rightAnchor.constraint(equalTo: cardView.rightAnchor, constant: -12),
-            cardCollection.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -20)
+            cardCollection.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -20),
+        ])
+        NSLayoutConstraint.activate([
+            loadingView.topAnchor.constraint(equalTo: cardCollection.topAnchor, constant: 0),
+            loadingView.leftAnchor.constraint(equalTo: cardCollection.leftAnchor, constant: 0),
+            loadingView.rightAnchor.constraint(equalTo: cardCollection.rightAnchor, constant: 0),
+            loadingView.bottomAnchor.constraint(equalTo: cardCollection.bottomAnchor, constant: 0)
+        ])
+        NSLayoutConstraint.activate([
+            transferButton.topAnchor.constraint(equalTo: cardView.bottomAnchor, constant: 28),
+            transferButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 20),
+            transferButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -20),
+            transferButton.heightAnchor.constraint(equalToConstant: 48)
         ])
     }
     
@@ -156,22 +173,24 @@ class MainViewController: BaseViewController {
             UserDefaults.standard.setValue(1, forKey: "loginType")
         }
     }
-        
-    func generateCards() -> Card? {
-        let user = UserDefaults.standard.string(forKey: "userID")?.userForIDstring()
-//        let card = RealmHelper.fetchObjects(Card.self).first(where: { $0.owner == user })
-        return RealmHelper.fetchObjects(Card.self).first(where: { $0.owner == user })
+    
+    @objc private func transferButtonTapped() {
+        let controller = TransferViewController(viewModel: viewModel)
+        controller.modalPresentationStyle = .formSheet
+        present(controller, animated: true)
+//        navigationController?.pushViewController(controller, animated: true)
     }
 }
 
 extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        2
+        viewModel.getItems()
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardCollectionCell", for: indexPath) as! CardCollectionCell
-        cell.configureCell(color: color[indexPath.row], card: generateCards() ?? Card())
+        let items = viewModel.generateCards()
+        cell.configureCell(card: items?[indexPath.row])
         return cell
     }
 }

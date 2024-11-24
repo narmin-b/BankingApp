@@ -20,6 +20,12 @@ class ReusableTextField: UITextField {
         configurePlaceholder()
     }
     
+    init(placeholder: String!) {
+        self.placeholderTitle = placeholder
+        super.init(frame: .zero)
+        configurePlaceholder()
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

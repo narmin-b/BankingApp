@@ -228,10 +228,37 @@ class RegisterViewController: BaseViewController {
             switch state {
             case .error(message: let message):
                 showMessage(title: message)
-            case .fieldError:
-                <#code#>
-            case .fieldValid:
-                <#code#>
+            case .fieldError(let type):
+                switch type {
+                case .firstName:
+                    firstNameTextField.errorBorderOn()
+                    showMessage(title: "Error", message: "First name is required")
+                case .lastName:
+                    lastNameTextField.errorBorderOn()
+                    showMessage(title: "Error", message: "Last name is required")
+                case .username:
+                    usernameTextField.errorBorderOn()
+                    showMessage(title: "Error", message: "Username is required")
+                case .email:
+                    emailTextField.errorBorderOn()
+                    showMessage(title: "Error", message: "Email is required")
+                case .password:
+                    passwordTextField.errorBorderOn()
+                    showMessage(title: "Error", message: "Password is required")
+                }
+            case .fieldValid(let type):
+                switch type {
+                case .firstName:
+                    firstNameTextField.errorBorderOff()
+                case .lastName:
+                    lastNameTextField.errorBorderOff()
+                case .username:
+                    usernameTextField.errorBorderOff()
+                case .email:
+                    emailTextField.errorBorderOff()
+                case .password:
+                    passwordTextField.errorBorderOff()
+                }
             }
         }
     }
@@ -344,39 +371,3 @@ class RegisterViewController: BaseViewController {
     }
 }
 
-extension RegisterViewController: RegisterViewModelDelegate {
-    func fieldError(_ type: ValidationType) {
-        switch type {
-        case .firstName:
-            firstNameTextField.errorBorderOn()
-            showMessage(title: "Error", message: "First name is required")
-        case .lastName:
-            lastNameTextField.errorBorderOn()
-            showMessage(title: "Error", message: "Last name is required")
-        case .username:
-            usernameTextField.errorBorderOn()
-            showMessage(title: "Error", message: "Username is required")
-        case .email:
-            emailTextField.errorBorderOn()
-            showMessage(title: "Error", message: "Email is required")
-        case .password:
-            passwordTextField.errorBorderOn()
-            showMessage(title: "Error", message: "Password is required")
-        }
-    }
-    
-    func fieldValid(_ type: ValidationType) {
-        switch type {
-        case .firstName:
-            firstNameTextField.errorBorderOff()
-        case .lastName:
-            lastNameTextField.errorBorderOff()
-        case .username:
-            usernameTextField.errorBorderOff()
-        case .email:
-            emailTextField.errorBorderOff()
-        case .password:
-            passwordTextField.errorBorderOff()
-        }
-    }
-}
