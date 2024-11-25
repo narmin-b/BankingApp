@@ -16,3 +16,9 @@ class Card: Object {
     @Persisted var pin: Int!
     @Persisted var balance: Double!
 }
+
+extension Card {
+    func cardInfo() -> String {
+        return "\(self.cardType.capitalized) ****\(String(self.cardNo ?? 0).suffix(4)) - \(self.balance ?? 0) ₼"
+    }
+}

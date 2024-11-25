@@ -18,6 +18,7 @@ class ReusableTextField: UITextField {
         self.iconSetting = iconSetting
         super.init(frame: .zero)
         configurePlaceholder()
+        configureIcon()
     }
     
     init(placeholder: String!) {
@@ -36,7 +37,9 @@ class ReusableTextField: UITextField {
         layer.borderColor = UIColor.black.cgColor
         layer.borderWidth = 2
         layer.cornerRadius = 12
-        
+    }
+    
+    private func configureIcon() {
         leftView = iconUISetting(iconName ?? "", x: iconSetting ?? 10)
         leftViewMode = .always
     }
