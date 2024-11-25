@@ -111,6 +111,7 @@ class TransferViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        resetChosenCards()
         configureView()
     }
     
@@ -132,6 +133,29 @@ class TransferViewController: BaseViewController {
     
     @objc fileprivate func dismissPicker() {
         activeTextField?.resignFirstResponder()
+        
+        let selectedRow = pickerView.selectedRow(inComponent: 0)
+        if let selectedCard = viewModel.generateCards()?[selectedRow] {
+            let selectedCardID = String(selectedCard.cardNo)
+            
+            if activeTextField == senderTextField {
+                let receiverCardID = UserDefaults.standard.string(forKey: "receiverCard")
+                if selectedCardID == receiverCardID {
+                    showMessage(title: "Card Is Already Chosen", message: "Please choose a different one.")
+                    return
+                }
+                UserDefaults.standard.set(selectedCardID, forKey: "senderCard")
+            }
+            else if activeTextField == receiverTextField {
+                let senderCardID = UserDefaults.standard.string(forKey: "senderCard")
+                if selectedCardID == senderCardID {
+                    showMessage(title: "Card Is Already Chosen", message: "Please choose a different one.")
+                    return
+                }
+                UserDefaults.standard.set(selectedCardID, forKey: "receiverCard")
+            }
+            activeTextField?.text = selectedCard.cardInfo()
+        }
     }
     
     override func configureView() {
@@ -174,15 +198,30 @@ class TransferViewController: BaseViewController {
             amountTextField.heightAnchor.constraint(equalToConstant: 48),
         ])
     }
+    
+    fileprivate func resetChosenCards() {
+        UserDefaults.standard.set("", forKey: "senderCard")
+        UserDefaults.standard.set("", forKey: "receiverCard")
+    }
 }
 
 extension TransferViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         activeTextField = textField
-    }
+        if activeTextField == amountTextField {
+            if let text = amountTextField.text, text.count >= 2 {
+                amountTextField.text = String(text.dropLast(2))
+            }
+        }    }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return textField == amountTextField
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if activeTextField == amountTextField {
+            amountTextField.text? += " ₼"
+        }
     }
 }
 
@@ -198,11 +237,5 @@ extension TransferViewController : UIPickerViewDelegate, UIPickerViewDataSource 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         let card = viewModel.generateCards()?[row]
         return card?.cardInfo()
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if let selectedCard = viewModel.generateCards()?[row] {
-            activeTextField?.text = selectedCard.cardInfo()
-        }
     }
 }
