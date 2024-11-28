@@ -7,8 +7,13 @@
 
 import UIKit
 
+protocol TransferViewControllerDelegate: AnyObject {
+    func reloadDataTransfer()
+}
+
 class TransferViewController: BaseViewController {
     private var activeTextField: UITextField?
+    var delegate: TransferViewControllerDelegate?
     
     private lazy var titleLabel: UILabel = {
         let label = ReusableLabel(labelText: "Transfer Money", labelFont: UIFont(name: "Futura", size: 28))
@@ -91,6 +96,12 @@ class TransferViewController: BaseViewController {
         return stack
     }()
     
+    private lazy var transferButton: UIButton = {
+        let button = ReusableButton(title: "Transfer", onAction: transferButtonTapped)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     private lazy var toolBar: UIToolbar = {
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
@@ -133,7 +144,10 @@ class TransferViewController: BaseViewController {
     
     @objc fileprivate func dismissPicker() {
         activeTextField?.resignFirstResponder()
-        
+        cardChecker()
+    }
+    
+    fileprivate func cardChecker() {
         let selectedRow = pickerView.selectedRow(inComponent: 0)
         if let selectedCard = viewModel.generateCards()?[selectedRow] {
             let selectedCardID = String(selectedCard.cardNo)
@@ -154,13 +168,46 @@ class TransferViewController: BaseViewController {
                 }
                 UserDefaults.standard.set(selectedCardID, forKey: "receiverCard")
             }
-            activeTextField?.text = selectedCard.cardInfo()
+            if activeTextField != amountTextField {
+                activeTextField?.text = selectedCard.cardInfo()
+            }
+        }
+    }
+    
+    @objc fileprivate func transferButtonTapped() {
+        transferOperation()
+    }
+    
+    fileprivate func transferOperation()  {
+        guard let senderCardID = UserDefaults.standard.string(forKey: "senderCard"),
+              !senderCardID.isEmpty,
+              let receiverCardID = UserDefaults.standard.string(forKey: "receiverCard"),
+              !receiverCardID.isEmpty else {
+            showMessage(title: "Missing Cards", message: "Please select both sender and receiver cards.")
+            return
+        }
+        
+        guard let senderCard = senderCardID.cardForCardNoString(),
+              let receiverCard = receiverCardID.cardForCardNoString() else { return }
+        
+        guard let transferAmount = Double(amountTextField.text?.dropLast(2) ?? "0"), transferAmount > 0 else {
+            showMessage(title: "Invalid Amount", message: "Please enter a valid transfer amount.")
+            return
+        }
+                
+        let transferRequest = transferRequest(senderCard: senderCard, receiverCard: receiverCard, amount: transferAmount)
+        if transferRequest {
+            delegate?.reloadDataTransfer()
+            dismiss(animated: true, completion: nil)
+            showMessage(title: "Transfer successful", message: "Transfer completed successfully.")
+        } else{
+            showMessage(title: "Insufficient Balance", message: "Not enough balance on sender card.")
         }
     }
     
     override func configureView() {
         super.configureView()
-        view.addSubViews(titleLabel, senderStackView, receiverStackView, amountStackView)
+        view.addSubViews(titleLabel, senderStackView, receiverStackView, amountStackView, transferButton)
         configureConstraint()
     }
     
@@ -197,11 +244,29 @@ class TransferViewController: BaseViewController {
             
             amountTextField.heightAnchor.constraint(equalToConstant: 48),
         ])
+        
+        NSLayoutConstraint.activate([
+            transferButton.topAnchor.constraint(equalTo: amountStackView.bottomAnchor, constant: 36),
+            transferButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+            transferButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
+            transferButton.heightAnchor.constraint(equalToConstant: 48),
+        ])
     }
     
     fileprivate func resetChosenCards() {
         UserDefaults.standard.set("", forKey: "senderCard")
         UserDefaults.standard.set("", forKey: "receiverCard")
+    }
+    
+    fileprivate func transferRequest(senderCard: Card, receiverCard: Card, amount: Double) -> Bool {
+        if senderCard.balance >= amount {
+            RealmHelper.updateObject(senderCard, updates: {senderCard.balance = (senderCard.balance - amount)})
+            RealmHelper.updateObject(receiverCard, updates: {receiverCard.balance = (receiverCard.balance + amount)})
+            return true
+        }
+        else {
+            return false
+        }
     }
 }
 
@@ -209,10 +274,9 @@ extension TransferViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         activeTextField = textField
         if activeTextField == amountTextField {
-            if let text = amountTextField.text, text.count >= 2 {
-                amountTextField.text = String(text.dropLast(2))
-            }
-        }    }
+            amountTextField.text = amountTextField.text?.dropLast2()
+        }
+    }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return textField == amountTextField

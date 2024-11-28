@@ -9,4 +9,7 @@ import Foundation
 enum UserDefaultsKey: String {
     case loginType
     case isLoggedIn
+    case userID
+    case receiverCard
+    case senderCard
 }

@@ -46,16 +46,15 @@ class MainViewController: BaseViewController {
     private lazy var cardCollection: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.estimatedItemSize = CGSize(width: 64, height: 24)
-        layout.itemSize = CGSize(width: 64, height: 24)
+//        layout.itemSize = CGSize(width: 64, height: 24)
         layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 16
         layout.minimumLineSpacing = 20
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
-        collectionView.isPagingEnabled = true
+        collectionView.isPagingEnabled = false
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(CardCollectionCell.self, forCellWithReuseIdentifier: "CardCollectionCell")
@@ -67,6 +66,22 @@ class MainViewController: BaseViewController {
         let button = ReusableButton(title: "Transfer Money", onAction: transferButtonTapped)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
+    }()
+    
+    private lazy var addCardButton: UIButton = {
+        let button = ReusableButton(title: "Add Card", onAction: addCardButtonTapped)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private lazy var buttonStackView: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [addCardButton, transferButton])
+        stack.axis = .horizontal
+        stack.alignment = .leading
+        stack.distribution = .fillEqually
+        stack.spacing = 12
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
     }()
     
     private lazy var loadingView: UIActivityIndicatorView = {
@@ -107,10 +122,9 @@ class MainViewController: BaseViewController {
     }
     
     override func configureView() {
-        view.addSubViews(profileStack, cardView, transferButton)
+        view.addSubViews(profileStack, cardView, buttonStackView)
         configureCardView()
         configureConstraint()
-        
     }
     
     fileprivate func configureViewModel() {
@@ -161,10 +175,12 @@ class MainViewController: BaseViewController {
             loadingView.bottomAnchor.constraint(equalTo: cardCollection.bottomAnchor, constant: 0)
         ])
         NSLayoutConstraint.activate([
-            transferButton.topAnchor.constraint(equalTo: cardView.bottomAnchor, constant: 28),
-            transferButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 20),
-            transferButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -20),
-            transferButton.heightAnchor.constraint(equalToConstant: 48)
+            buttonStackView.topAnchor.constraint(equalTo: cardView.bottomAnchor, constant: 28),
+            buttonStackView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 20),
+            buttonStackView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -20),
+            
+            addCardButton.heightAnchor.constraint(equalToConstant: 48),
+            transferButton.heightAnchor.constraint(equalToConstant: 48),
         ])
     }
     
@@ -176,9 +192,16 @@ class MainViewController: BaseViewController {
     
     @objc private func transferButtonTapped() {
         let controller = TransferViewController(viewModel: viewModel)
+        controller.delegate = self
         controller.modalPresentationStyle = .formSheet
         present(controller, animated: true)
-//        navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    @objc private func addCardButtonTapped() {
+        let controller = AddCardViewController(viewModel: AddCardViewModel())
+        controller.delegate = self
+        controller.modalPresentationStyle = .formSheet
+        present(controller, animated: true)
     }
 }
 
@@ -192,5 +215,15 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
         let items = viewModel.generateCards()
         cell.configureCell(card: items?[indexPath.row])
         return cell
+    }
+}
+
+extension MainViewController : TransferViewControllerDelegate, AddCardViewControllerDelegate {
+    func reloadDataAddition() {
+        cardCollection.reloadData()
+    }
+    
+    func reloadDataTransfer() {
+        cardCollection.reloadData()
     }
 }

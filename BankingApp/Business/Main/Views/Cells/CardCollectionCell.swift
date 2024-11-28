@@ -58,7 +58,7 @@ final class CardCollectionCell: UICollectionViewCell {
     func configureCell(card: Card?) {
         cardTypeImageView.image = UIImage(named: card?.cardType.lowercased() ?? "")
         cardNoLabel.text = "**** " + String(card?.cardNo ?? 0).suffix(4)
-        cardBalanceLabel.text = String(card?.balance ?? 0) + " ₼"
+        cardBalanceLabel.text = String(format: "%.2f", card?.balance ?? 0) + " ₼"
     }
     
     fileprivate func configureView() {
@@ -82,7 +82,6 @@ final class CardCollectionCell: UICollectionViewCell {
         cardTypeImageView.rightAnchor.constraint(equalTo: cardImageView.rightAnchor, constant: -8).isActive = true
         cardTypeImageView.heightAnchor.constraint(equalToConstant: 56).isActive = true
         cardTypeImageView.widthAnchor.constraint(equalToConstant: 56).isActive = true
-//
         
         cardNoLabel.topAnchor.constraint(equalTo: cardImageView.topAnchor, constant: 12).isActive = true
         cardNoLabel.leftAnchor.constraint(equalTo: cardImageView.leftAnchor, constant: 12).isActive = true

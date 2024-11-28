@@ -38,11 +38,30 @@ extension String {
         return passwordPredicate.evaluate(with: self)
     }
     
-    func userForIDstring() -> User {
+    func userForIDstring() -> User? {
         guard let userID = try? ObjectId(string: self) else { return User() }
         let user = RealmHelper.fetchObject(User.self, primaryKey: userID)
         
-        return user ?? User()
+        return user
+    }
+    
+    func cardForCardNoString() -> Card? {
+        guard let cardNo = Int(self) else { return nil }
+        let card = RealmHelper.fetchObjects(Card.self).first(where: { $0.cardNo == cardNo })
+        
+        return card
+    }
+    
+    func dropLast2() -> String {
+        String(self.dropLast(2))
+    }
+    
+    func strToDouble() -> Double? {
+        Double(self)
+    }
+    
+    func strToInt() -> Int? {
+        Int(self)
     }
 }
 
@@ -50,11 +69,29 @@ extension Double {
     func convertToString() -> String {
         return String(self)
     }
+    
+    func isBalanceValid() -> Bool {
+        let num = Double(self)
+        if num >= 0 {return true}
+        return false
+    }
 }
 
 extension Int {
     func convertToString() -> String {
         return String(self)
+    }
+    
+    func isCardNoValid() -> Bool {
+        let num = String(self).count
+        if num == 12 {return true}
+        return false
+    }
+    
+    func isPinValid() -> Bool {
+        let num = String(self).count
+        if num == 4 {return true}
+        return false
     }
 }
 
