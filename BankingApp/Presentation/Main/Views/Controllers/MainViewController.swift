@@ -46,7 +46,6 @@ class MainViewController: BaseViewController {
     private lazy var cardCollection: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.estimatedItemSize = CGSize(width: 64, height: 24)
-//        layout.itemSize = CGSize(width: 64, height: 24)
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = 20
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -154,7 +153,6 @@ class MainViewController: BaseViewController {
             profileIcon.leftAnchor.constraint(equalTo: profileStack.leftAnchor, constant: 0),
             profileIcon.centerYAnchor.constraint(equalTo: profileStack.centerYAnchor),
             profileInfo.centerYAnchor.constraint(equalTo: profileStack.centerYAnchor),
-
         ])
         
         NSLayoutConstraint.activate([

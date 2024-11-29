@@ -13,7 +13,9 @@ protocol TransferViewControllerDelegate: AnyObject {
 
 class TransferViewController: BaseViewController {
     private var activeTextField: UITextField?
-    var delegate: TransferViewControllerDelegate?
+    weak var delegate: TransferViewControllerDelegate?
+    private var receiverCardID = ""
+    private var senderCardID = ""
     
     private lazy var titleLabel: UILabel = {
         let label = ReusableLabel(labelText: "Transfer Money", labelFont: UIFont(name: "Futura", size: 28))
@@ -97,7 +99,9 @@ class TransferViewController: BaseViewController {
     }()
     
     private lazy var transferButton: UIButton = {
-        let button = ReusableButton(title: "Transfer", onAction: transferButtonTapped)
+        let button = ReusableButton(title: "Transfer", onAction: { [weak self] in
+            self?.transferButtonTapped()
+        })
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -122,7 +126,6 @@ class TransferViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        resetChosenCards()
         configureView()
     }
     
@@ -135,6 +138,10 @@ class TransferViewController: BaseViewController {
     
      required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        print("deinit")
     }
     
     fileprivate func configurePickerView() {
@@ -153,21 +160,20 @@ class TransferViewController: BaseViewController {
             let selectedCardID = String(selectedCard.cardNo)
             
             if activeTextField == senderTextField {
-                let receiverCardID = UserDefaults.standard.string(forKey: "receiverCard")
                 if selectedCardID == receiverCardID {
                     showMessage(title: "Card Is Already Chosen", message: "Please choose a different one.")
                     return
                 }
-                UserDefaults.standard.set(selectedCardID, forKey: "senderCard")
+                senderCardID = selectedCardID
             }
             else if activeTextField == receiverTextField {
-                let senderCardID = UserDefaults.standard.string(forKey: "senderCard")
                 if selectedCardID == senderCardID {
                     showMessage(title: "Card Is Already Chosen", message: "Please choose a different one.")
                     return
                 }
-                UserDefaults.standard.set(selectedCardID, forKey: "receiverCard")
+                receiverCardID = selectedCardID
             }
+            
             if activeTextField != amountTextField {
                 activeTextField?.text = selectedCard.cardInfo()
             }
@@ -179,9 +185,7 @@ class TransferViewController: BaseViewController {
     }
     
     fileprivate func transferOperation()  {
-        guard let senderCardID = UserDefaults.standard.string(forKey: "senderCard"),
-              !senderCardID.isEmpty,
-              let receiverCardID = UserDefaults.standard.string(forKey: "receiverCard"),
+        guard !senderCardID.isEmpty,
               !receiverCardID.isEmpty else {
             showMessage(title: "Missing Cards", message: "Please select both sender and receiver cards.")
             return
@@ -251,11 +255,6 @@ class TransferViewController: BaseViewController {
             transferButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
             transferButton.heightAnchor.constraint(equalToConstant: 48),
         ])
-    }
-    
-    fileprivate func resetChosenCards() {
-        UserDefaults.standard.set("", forKey: "senderCard")
-        UserDefaults.standard.set("", forKey: "receiverCard")
     }
     
     fileprivate func transferRequest(senderCard: Card, receiverCard: Card, amount: Double) -> Bool {

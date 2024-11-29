@@ -12,7 +12,7 @@ protocol AddCardViewControllerDelegate: AnyObject {
 }
 
 class AddCardViewController: BaseViewController {
-    var delegate: AddCardViewControllerDelegate?
+    weak var delegate: AddCardViewControllerDelegate?
     
     private lazy var titleLabel: UILabel = {
         let label = ReusableLabel(labelText: "Add card", labelFont: UIFont(name: "Futura", size: 28))
@@ -124,7 +124,9 @@ class AddCardViewController: BaseViewController {
     }()
     
     private lazy var addCardButton: UIButton = {
-        let button = ReusableButton(title: "Add Card", onAction: addCardButtonTapped)
+        let button = ReusableButton(title: "Add Card", onAction: { [weak self] in
+            self?.addCardButtonTapped()
+        })
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -156,6 +158,10 @@ class AddCardViewController: BaseViewController {
     
      required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        print("deinit addview")
     }
     
     fileprivate func configureViewModel() {
