@@ -199,7 +199,7 @@ class TransferViewController: BaseViewController {
             return
         }
                 
-        let transferRequest = transferRequest(senderCard: senderCard, receiverCard: receiverCard, amount: transferAmount)
+        let transferRequest = viewModel.transferRequest(from: senderCard, to: receiverCard, amount: transferAmount)
         if transferRequest {
             delegate?.reloadDataTransfer()
             dismiss(animated: true, completion: nil)
@@ -255,17 +255,6 @@ class TransferViewController: BaseViewController {
             transferButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
             transferButton.heightAnchor.constraint(equalToConstant: 48),
         ])
-    }
-    
-    fileprivate func transferRequest(senderCard: Card, receiverCard: Card, amount: Double) -> Bool {
-        if senderCard.balance >= amount {
-            RealmHelper.updateObject(senderCard, updates: {senderCard.balance = (senderCard.balance - amount)})
-            RealmHelper.updateObject(receiverCard, updates: {receiverCard.balance = (receiverCard.balance + amount)})
-            return true
-        }
-        else {
-            return false
-        }
     }
 }
 

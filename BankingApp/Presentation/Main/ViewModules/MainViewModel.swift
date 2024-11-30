@@ -51,4 +51,15 @@ final class MainViewModel {
         }
         return cards.count
     }
+    
+    func transferRequest(from senderCard: Card, to receiverCard: Card, amount: Double) -> Bool {
+        if senderCard.balance >= amount {
+            RealmHelper.updateObject(senderCard, updates: {senderCard.balance = (senderCard.balance - amount)})
+            RealmHelper.updateObject(receiverCard, updates: {receiverCard.balance = (receiverCard.balance + amount)})
+            return true
+        }
+        else {
+            return false
+        }
+    }
 }
