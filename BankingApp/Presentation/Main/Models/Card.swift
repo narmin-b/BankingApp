@@ -21,8 +21,6 @@ extension Card {
     func cardInfo() -> String {
         let newBalance = (self.balance).rounded()
         let doubleStr = Double(String(format: "%.2f", self.balance))
-        //.rounded(toPlaces: 2)
-        //Double(round(100 * self.balance) / 100)
         
         return "\(self.cardType.capitalized) ****\(String(self.cardNo ?? 0).suffix(4)) - \(doubleStr ?? 0) ₼"
     }

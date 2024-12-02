@@ -14,4 +14,3 @@ struct UserDataModel {
     var password: String!
     var email: String?
 }
-
