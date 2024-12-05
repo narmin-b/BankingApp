@@ -173,7 +173,6 @@ class TransferViewController: BaseViewController {
                 }
                 receiverCardID = selectedCardID
             }
-            
             if activeTextField != amountTextField {
                 activeTextField?.text = selectedCard.cardInfo()
             }
@@ -198,7 +197,7 @@ class TransferViewController: BaseViewController {
             showMessage(title: "Invalid Amount", message: "Please enter a valid transfer amount.")
             return
         }
-                
+        
         let transferRequest = viewModel.transferRequest(from: senderCard, to: receiverCard, amount: transferAmount)
         if transferRequest {
             delegate?.reloadDataTransfer()

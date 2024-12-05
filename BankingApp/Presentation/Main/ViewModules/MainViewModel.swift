@@ -21,17 +21,12 @@ final class MainViewModel {
     
     func generateCards() -> [Card]? {
         guard cards.isEmpty else {
-            listener?(.success)
+//            listener?(.success)
             return cards
         }
         listener?(.loading)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.getCards()
-            if self.cards.isEmpty {
-                self.listener?(.noCards)
-            } else {
-                self.listener?(.success)
-            }
             self.listener?(.loaded)
         }
         return cards
@@ -40,15 +35,15 @@ final class MainViewModel {
     fileprivate func getCards() {
         let user = UserDefaults.standard.string(forKey: "userID")?.userForIDstring()
         self.cards = Array(RealmHelper.fetchObjects(Card.self).filter({$0.owner == user}))
-    }
-    
-    func getItems() -> Int {
-        getCards()
         if self.cards.isEmpty {
             self.listener?(.error(message: "No Card Found"))
         } else {
             self.listener?(.success)
         }
+    }
+    
+    func getItems() -> Int {
+        getCards()
         return cards.count
     }
     

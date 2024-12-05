@@ -117,11 +117,11 @@ class MainViewController: BaseViewController {
     }
     
     fileprivate func configureCardView() {
-        cardView.addSubViews(loadingView, cardCollection)
+        cardView.addSubViews(cardCollection)
     }
     
     override func configureView() {
-        view.addSubViews(profileStack, cardView, buttonStackView)
+        view.addSubViews(profileStack, cardView, buttonStackView, loadingView)
         configureCardView()
         configureConstraint()
     }
@@ -167,10 +167,10 @@ class MainViewController: BaseViewController {
             cardCollection.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -20),
         ])
         NSLayoutConstraint.activate([
-            loadingView.topAnchor.constraint(equalTo: cardCollection.topAnchor, constant: 0),
-            loadingView.leftAnchor.constraint(equalTo: cardCollection.leftAnchor, constant: 0),
-            loadingView.rightAnchor.constraint(equalTo: cardCollection.rightAnchor, constant: 0),
-            loadingView.bottomAnchor.constraint(equalTo: cardCollection.bottomAnchor, constant: 0)
+            loadingView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
+            loadingView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 0),
+            loadingView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 0),
+            loadingView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
         ])
         NSLayoutConstraint.activate([
             buttonStackView.topAnchor.constraint(equalTo: cardView.bottomAnchor, constant: 28),

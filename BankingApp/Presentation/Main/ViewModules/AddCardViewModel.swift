@@ -92,10 +92,8 @@ final class AddCardViewModel {
     func addCard() {
         let user = UserDefaults.standard.string(forKey: "userID")?.userForIDstring()
         card.owner = user
-        print(card)
         let newCard = Card()
         newCard.mapFrom(from: card)
-        print("new:", newCard)
         RealmHelper.addObject(newCard)
     }
     
