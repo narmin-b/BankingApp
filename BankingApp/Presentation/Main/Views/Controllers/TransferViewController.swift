@@ -193,18 +193,36 @@ class TransferViewController: BaseViewController {
         guard let senderCard = senderCardID.cardForCardNoString(),
               let receiverCard = receiverCardID.cardForCardNoString() else { return }
         
-        guard let transferAmount = Double(amountTextField.text?.dropLast(2) ?? "0"), transferAmount > 0 else {
-            showMessage(title: "Invalid Amount", message: "Please enter a valid transfer amount.")
-            return
-        }
+        
+        let transferAmount = getTransferAmount()
         
         let transferRequest = viewModel.transferRequest(from: senderCard, to: receiverCard, amount: transferAmount)
         if transferRequest {
+            print(transferAmount)
             delegate?.reloadDataTransfer()
             dismiss(animated: true, completion: nil)
             showMessage(title: "Transfer successful", message: "Transfer completed successfully.")
         } else{
             showMessage(title: "Insufficient Balance", message: "Not enough balance on sender card.")
+        }
+    }
+    
+    fileprivate func getTransferAmount() -> Double {
+        var transferAmount: Double = 0
+        if let text = amountTextField.text {
+            if text.contains(" ₼") {
+                let amountString = String(text.dropLast(2))
+                transferAmount = Double(amountString) ?? 0
+            } else {
+                transferAmount = Double(text) ?? 0
+            }
+        }
+
+        if transferAmount > 0 {
+            return transferAmount
+        } else {
+            showMessage(title: "Invalid Amount", message: "Please enter a valid transfer amount.")
+            return -1
         }
     }
     
@@ -269,6 +287,12 @@ extension TransferViewController: UITextFieldDelegate {
         return textField == amountTextField
     }
     
+//    func textFieldDidChangeSelection(_ textField: UITextField) {
+//        if activeTextField == amountTextField {
+//            amountTextField.text? += " ₼"
+//        }
+//    }
+        
     func textFieldDidEndEditing(_ textField: UITextField) {
         if activeTextField == amountTextField {
             amountTextField.text? += " ₼"

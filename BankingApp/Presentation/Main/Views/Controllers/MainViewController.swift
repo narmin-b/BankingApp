@@ -218,10 +218,10 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
 
 extension MainViewController : TransferViewControllerDelegate, AddCardViewControllerDelegate {
     func reloadDataAddition() {
-        cardCollection.reloadData()
+        self.cardCollection.reloadData()
     }
     
     func reloadDataTransfer() {
-        cardCollection.reloadData()
+        self.cardCollection.reloadData()
     }
 }
