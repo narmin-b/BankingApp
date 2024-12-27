@@ -7,6 +7,8 @@
 
 import UIKit
 
+// TODO: new tab with currency
+
 class MainViewController: BaseViewController {
     private lazy var profileIcon: UIImageView = {
         let imageView = UIImageView()

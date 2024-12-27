@@ -206,7 +206,8 @@ class LoginViewController: BaseViewController {
             scrollView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
             scrollView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
             scrollView.topAnchor.constraint(equalTo: loginLabel.bottomAnchor, constant: 20),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -485),
+            scrollView.centerXAnchor
+//            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -485),
             
             scrollStack.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
             scrollStack.leftAnchor.constraint(equalTo: scrollView.leftAnchor, constant: 0),
