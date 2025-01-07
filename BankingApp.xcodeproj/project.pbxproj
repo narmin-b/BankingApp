@@ -7,9 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1100C5742D1EFE8100EE373E /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 1100C5732D1EFE8100EE373E /* Realm */; };
 		1100C5762D1EFE8100EE373E /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1100C5752D1EFE8100EE373E /* RealmSwift */; };
-		11251CAB2CD6187100FFD859 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 11251CAA2CD6187100FFD859 /* RealmSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,8 +41,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1100C5762D1EFE8100EE373E /* RealmSwift in Frameworks */,
-				1100C5742D1EFE8100EE373E /* Realm in Frameworks */,
-				11251CAB2CD6187100FFD859 /* RealmSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
